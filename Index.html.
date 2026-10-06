@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agri-Vincent AI</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f7f4;
+      color: #222;
+    }
+
+    header {
+      background: #2e7d32;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 20px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #256628;
+    }
+
+    #response {
+      margin-top: 20px;
+      padding: 15px;
+      background: #eef6ee;
+      border-radius: 8px;
+      display: none;
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Agri-Vincent AI</h1>
+  <p>Climate-Smart Maize Farming Assistant</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+
+    <h2>Ask about maize farming</h2>
+
+    <p>
+      Ask a question about planting, fertilizer, pests,
+      weather, harvesting, storage, or maize markets.
+    </p>
+
+    <textarea id="question"
+      placeholder="Example: When should I apply fertilizer to my maize?"></textarea>
+
+    <button onclick="getAdvice()">Get Maize Advice</button>
+
+    <div id="response"></div>
+
+  </div>
+
+</div>
+
+<footer>
+  <p>
+    Agri-Vincent AI Prototype — Rwanda
+  </p>
+
+  <p>
+    Mistral AI integration, external APIs, and MCP integration
+    are planned for future development.
+  </p>
+</footer>
+
+<script>
+
+function getAdvice() {
+
+  const question =
+    document.getElementById("question").value.toLowerCase();
+
+  const response =
+    document.getElementById("response");
+
+  if (question.trim() === "") {
+
+    response.style.display = "block";
+
+    response.innerHTML =
+      "Please enter a maize farming question.";
+
+    return;
+  }
+
+  let advice = "";
+
+  if (
+    question.includes("fertilizer") ||
+    question.includes("dap") ||
+    question.includes("urea")
+  ) {
+
+    advice =
+      "<strong>Fertilizer advice:</strong><br>" +
+      "Use fertilizer according to the maize growth stage " +
+      "and recommended local agricultural guidelines. " +
+      "Avoid applying more fertilizer than recommended. " +
+      "For accurate advice, farmer-specific information such as " +
+      "soil condition, planting date, and maize growth stage should " +
+      "be considered.";
+
+  } else if (
+    question.includes("pest") ||
+    question.includes("insect") ||
+    question.includes("disease")
+  ) {
+
+    advice =
+      "<strong>Pest and disease advice:</strong><br>" +
+      "Regularly inspect maize leaves and stems for signs of pests " +
+      "or disease. Early identification can reduce crop losses. " +
+      "Farmers should seek advice from an agricultural extension " +
+      "worker before applying pesticides.";
+
+  } else if (
+    question.includes("rain") ||
+    question.includes("weather") ||
+    question.includes("drought")
+  ) {
+
+    advice =
+      "<strong>Weather advice:</strong><br>" +
+      "Monitor rainfall and weather conditions before planting " +
+      "or applying fertilizer. During periods of rainfall uncertainty " +
+      "or drought risk, climate-smart farming practices can help " +
+      "reduce production risks.";
+
+  } else if (
+    question.includes("harvest") ||
+    question.includes("harvesting")
+  ) {
+
+    advice =
+      "<strong>Harvest advice:</strong><br>" +
+      "Harvest maize when it has reached appropriate maturity " +
+      "and moisture conditions. Proper drying and storage can help " +
+      "reduce post-harvest losses and protect grain quality.";
+
+  } else if (
+    question.includes("market") ||
+    question.includes("price") ||
+    question.includes("sell")
+  ) {
+
+    advice =
+      "<strong>Market advice:</strong><br>" +
+      "Before selling maize, compare available buyers and market " +
+      "prices where possible. Proper storage can give farmers more " +
+      "flexibility to avoid forced low-price sales.";
+
+  } else {
+
+    advice =
+      "<strong>Agri-Vincent AI:</strong><br>" +
+      "Your question has been received. This prototype demonstrates " +
+      "the planned farmer-support workflow. Future versions will " +
+      "use Mistral AI models, agricultural knowledge, weather data, " +
+      "market information, and MCP-connected tools to provide " +
+      "more personalized recommendations.";
+
+  }
+
+  response.style.display = "block";
+
+  response.innerHTML = advice;
+}
+
+</script>
+
+</body>
+</html>
