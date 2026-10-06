@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Agri-Vincent AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f8f4;
+      color: #222;
+    }
+
+    header {
+      background: #16803c;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    button {
+      background: #16803c;
+      color: white;
+      border: none;
+      padding: 11px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #10652f;
+    }
+
+    .examples {
+      margin: 10px 0 20px;
+    }
+
+    .answer {
+      display: none;
+      background: #eef8ef;
+      border-left: 5px solid #16803c;
+      padding: 18px;
+      border-radius: 8px;
+      line-height: 1.6;
+    }
+
+    .about {
+      line-height: 1.7;
+    }
+
+    footer {
+      text-align: center;
+      background: #145c31;
+      color: white;
+      padding: 18px;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 26px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      button {
+        width: 100%;
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1 id="title">Agri-Vincent AI</h1>
+    <p id="subtitle">
+      Umufasha mu buhinzi bw'ibigori bujyanye n'imihindagurikire y'ikirere
+    </p>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+
+      <label for="language" id="languageLabel">
+        Hitamo ururimi
+      </label>
+
+      <select id="language" onchange="changeLanguage()">
+        <option value="rw">Kinyarwanda</option>
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="sw">Kiswahili</option>
+        <option value="am">Amharic</option>
+        <option value="ha">Hausa</option>
+        <option value="yo">Yorùbá</option>
+        <option value="zu">isiZulu</option>
+        <option value="pt">Português</option>
+        <option value="es">Español</option>
+        <option value="ar">العربية</option>
+        <option value="zh">中文</option>
+      </select>
+
+      <h2 id="questionTitle">
+        Baza ikibazo ku buhinzi bw'ibigori
+      </h2>
+
+      <textarea
+        id="question"
+        placeholder="Urugero: Ni ryari nashyira ifumbire ku bigori?"
+      ></textarea>
+
+      <div class="examples">
+
+        <button id="fertilizerBtn" onclick="useExample('fertilizer')">
+          Ifumbire
+        </button>
+
+        <button id="pestsBtn" onclick="useExample('pests')">
+          Udukoko n'indwara
+        </button>
+
+        <button id="weatherBtn" onclick="useExample('weather')">
+          Ikirere
+        </button>
+
+        <button id="harvestBtn" onclick="useExample('harvest')">
+          Gusarura
+        </button>
+
+        <button id="marketBtn" onclick="useExample('market')">
+          Isoko
+        </button>
+
+      </div>
+
+      <button id="adviceButton" onclick="getAdvice()">
+        Shaka inama ku bigori
+      </button>
+
+    </div>
+
+    <div class="card">
+
+      <h2 id="answerTitle">Inama</h2>
+
+      <div id="answer" class="answer"></div>
+
+    </div>
+
+    <div class="card about">
+
+      <h2 id="aboutTitle">
+        Ibirebana na Agri-Vincent AI
+      </h2>
+
+      <p id="aboutText">
+        Agri-Vincent AI ni prototype igamije gufasha abahinzi bato b'ibigori
+        kubona amakuru y'ingirakamaro kandi ajyanye n'imihindagurikire y'ikirere.
+      </p>
+
+      <p id="status">
+        Iyi ni prototype. Mu gihe kiri imbere ishobora guhuza Mistral AI,
+        MCP tools, amakuru y'ikirere n'amakuru y'amasoko.
+      </p>
+
+    </div>
+
+  </div>
+
+  <footer id="footer">
+    Agri-Vincent AI | Ubuhinzi bw'ibigori bugezweho
+  </footer>
+
+
+<script>
+
+let currentLanguage = "rw";
+
+const translations = {
+
+  rw: {
+    title: "Agri-Vincent AI",
+    subtitle: "Umufasha mu buhinzi bw'ibigori bujyanye n'imihindagurikire y'ikirere",
+    languageLabel: "Hitamo ururimi",
+    questionTitle: "Baza ikibazo ku buhinzi bw'ibigori",
+    placeholder: "Urugero: Ni ryari nashyira ifumbire ku bigori?",
+    adviceButton: "Shaka inama ku bigori",
+
+    fertilizer: "Ifumbire",
+    pests: "Udukoko n'indwara",
+    weather: "Ikirere",
+    harvest: "Gusarura",
+    market: "Isoko",
+
+    answerTitle: "Inama",
+    aboutTitle: "Ibirebana na Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI ni prototype igamije gufasha abahinzi bato b'ibigori kubona amakuru y'ingirakamaro kandi ajyanye n'imihindagurikire y'ikirere.",
+
+    status:
+      "Iyi ni prototype. Mu gihe kiri imbere ishobora guhuza Mistral AI, MCP tools, amakuru y'ikirere n'amakuru y'amasoko.",
+
+    footer:
+      "Agri-Vincent AI | Ubuhinzi bw'ibigori bugezweho",
+
+    fertilizerExample:
+      "Ni ryari nashyira ifumbire ku bigori?",
+
+    pestsExample:
+      "Nakora iki niba ibigori byanjye bifite udukoko cyangwa indwara?",
+
+    weatherExample:
+      "Ikirere kigira izihe ngaruka ku buhinzi bw'ibigori?",
+
+    harvestExample:
+      "Ni ryari ibigori biba biteguye gusarurwa?",
+
+    marketExample:
+      "Nabona nte isoko ryiza ry'ibigori?",
+
+    fertilizerAdvice:
+      "Koresha ifumbire ukurikije icyiciro ibigori bigezeho n'imiterere y'ubutaka. Kurikiza inama zitangwa n'abajyanama b'ubuhinzi bo mu gace urimo.",
+
+    pestAdvice:
+      "Jya ugenzura umurima kenshi kugira ngo umenye udukoko n'indwara hakiri kare. Koresha imbuto nziza kandi ukoreshe uburyo bukwiye bwo kurwanya udukoko.",
+
+    weatherAdvice:
+      "Kurikirana iteganyagihe mbere yo gutera cyangwa gushyira ifumbire. Irinde gushyira ifumbire mbere y'imvura nyinshi.",
+
+    harvestAdvice:
+      "Sarura ibigori igihe ibinyampeke byeze kandi byumye bihagije. Bishyire ahantu hasukuye, humye kandi hizewe.",
+
+    marketAdvice:
+      "Shaka abaguzi mbere yo gusarura, gereranya ibiciro ku masoko atandukanye kandi ubike ibigori neza niba udahise ubigurisha."
+  },
+
+
+  en: {
+    title: "Agri-Vincent AI",
+    subtitle: "Climate-Smart Maize Farming Assistant",
+    languageLabel: "Choose language",
+    questionTitle: "Ask a question about maize farming",
+    placeholder: "Example: When should I apply fertilizer to maize?",
+    adviceButton: "Get Maize Advice",
+
+    fertilizer: "Fertilizer",
+    pests: "Pests & Diseases",
+    weather: "Weather",
+    harvest: "Harvest",
+    market: "Market",
+
+    answerTitle: "Advice",
+    aboutTitle: "About Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI is a prototype designed to support smallholder maize farmers with practical and climate-smart agricultural information.",
+
+    status:
+      "Prototype version. Future versions can integrate Mistral AI, MCP tools, weather information and market data.",
+
+    footer:
+      "Agri-Vincent AI | Climate-Smart Maize Farming",
+
+    fertilizerExample:
+      "When should I apply fertilizer to maize?",
+
+    pestsExample:
+      "What should I do if my maize has pests or diseases?",
+
+    weatherExample:
+      "How does weather affect maize farming?",
+
+    harvestExample:
+      "When is maize ready for harvest?",
+
+    marketExample:
+      "How can I find a good market for maize?",
+
+    fertilizerAdvice:
+      "Apply fertilizer according to the crop growth stage and soil conditions. Follow recommendations from local agricultural experts.",
+
+    pestAdvice:
+      "Inspect your field regularly to identify pests and diseases early. Use quality seeds and appropriate pest management methods.",
+
+    weatherAdvice:
+      "Monitor weather forecasts before planting or applying fertilizer. Avoid applying fertilizer before heavy rainfall.",
+
+    harvestAdvice:
+      "Harvest maize when the grains are mature and sufficiently dry. Store it in a clean, dry and safe place.",
+
+    marketAdvice:
+      "Look for buyers before harvest, compare prices in different markets and store maize properly if you do not need to sell immediately."
+  },
+
+
+  fr: {
+    title: "Agri-Vincent AI",
+    subtitle: "Assistant pour la culture intelligente du maïs",
+    languageLabel: "Choisir la langue",
+    questionTitle: "Posez une question sur la culture du maïs",
+    placeholder: "Exemple : Quand dois-je appliquer l'engrais au maïs ?",
+    adviceButton: "Obtenir des conseils sur le maïs",
+
+    fertilizer: "Engrais",
+    pests: "Ravageurs et maladies",
+    weather: "Météo",
+    harvest: "Récolte",
+    market: "Marché",
+
+    answerTitle: "Conseil",
+    aboutTitle: "À propos d'Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI est un prototype conçu pour aider les petits producteurs de maïs avec des informations pratiques et adaptées au climat.",
+
+    status:
+      "Version prototype. Les futures versions pourront intégrer Mistral AI, les outils MCP, les informations météorologiques et les données du marché.",
+
+    footer:
+      "Agri-Vincent AI | Agriculture intelligente du maïs",
+
+    fertilizerExample:
+      "Quand dois-je appliquer l'engrais au maïs ?",
+
+    pestsExample:
+      "Que dois-je faire si mon maïs a des ravageurs ou des maladies ?",
+
+    weatherExample:
+      "Comment la météo affecte-t-elle la culture du maïs ?",
+
+    harvestExample:
+      "Quand le maïs est-il prêt pour la récolte ?",
+
+    marketExample:
+      "Comment trouver un bon marché pour le maïs ?",
+
+    fertilizerAdvice:
+      "Appliquez l'engrais selon le stade de croissance de la culture et les conditions du sol. Suivez les recommandations agricoles locales.",
+
+    pestAdvice:
+      "Inspectez régulièrement votre champ pour détecter rapidement les ravageurs et les maladies. Utilisez des semences de qualité et des méthodes appropriées de lutte contre les ravageurs.",
+
+    weatherAdvice:
+      "Suivez les prévisions météorologiques avant de planter ou d'appliquer l'engrais. Évitez d'appliquer l'engrais avant de fortes pluies.",
+
+    harvestAdvice:
+      "Récoltez le maïs lorsque les grains sont mûrs et suffisamment secs. Conservez-le dans un endroit propre, sec et sûr.",
+
+    marketAdvice:
+      "Cherchez des acheteurs avant la récolte, comparez les prix sur différents marchés et stockez correctement le maïs."
+  },
+
+
+  sw: {
+    title: "Agri-Vincent AI",
+    subtitle: "Msaidizi wa Kilimo cha Mahindi Kinachozingatia Hali ya Hewa",
+    languageLabel: "Chagua lugha",
+    questionTitle: "Uliza swali kuhusu kilimo cha mahindi",
+    placeholder: "Mfano: Ni lini ninapaswa kuweka mbolea kwenye mahindi?",
+    adviceButton: "Pata Ushauri wa Mahindi",
+
+    fertilizer: "Mbolea",
+    pests: "Wadudu na Magonjwa",
+    weather: "Hali ya Hewa",
+    harvest: "Uvunaji",
+    market: "Soko",
+
+    answerTitle: "Ushauri",
+    aboutTitle: "Kuhusu Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI ni mfano wa mfumo ulioundwa kusaidia wakulima wadogo wa mahindi kupata taarifa muhimu na zinazozingatia mabadiliko ya hali ya hewa.",
+
+    status:
+      "Hii ni toleo la mfano. Matoleo yajayo yanaweza kuunganisha Mistral AI, zana za MCP, taarifa za hali ya hewa na data za masoko.",
+
+    footer:
+      "Agri-Vincent AI | Kilimo Bora cha Mahindi",
+
+    fertilizerExample:
+      "Ni lini ninapaswa kuweka mbolea kwenye mahindi?",
+
+    pestsExample:
+      "Nifanye nini ikiwa mahindi yangu yana wadudu au magonjwa?",
+
+    weatherExample:
+      "Hali ya hewa inaathirije kilimo cha mahindi?",
+
+    harvestExample:
+      "Ni lini mahindi yako tayari kuvunwa?",
+
+    marketExample:
+      "Ninawezaje kupata soko zuri la mahindi?",
+
+    fertilizerAdvice:
+      "Tumia mbolea kulingana na hatua ya ukuaji wa zao na hali ya udongo. Fuata mapendekezo ya wataalamu wa kilimo wa eneo lako.",
+
+    pestAdvice:
+      "Kagua shamba mara kwa mara ili kugundua wadudu na magonjwa mapema. Tumia mbegu bora na njia sahihi za kudhibiti wadudu.",
+
+    weatherAdvice:
+      "Fuatilia utabiri wa hali ya hewa kabla ya kupanda au kuweka mbolea. Epuka kuweka mbolea kabla ya mvua kubwa.",
+
+    harvestAdvice:
+      "Vuna mahindi wakati punje zimekomaa na kukauka vya kutosha. Yahifadhi mahali safi, pakavu na salama.",
+
+    marketAdvice:
+      "Tafuta wanunuzi kabla ya kuvuna, linganisha bei katika masoko mbalimbali na hifadhi mahindi vizuri."
+  },
+
+
+  am: {
+    title: "Agri-Vincent AI",
+    subtitle: "የአየር ንብረትን የሚያስብ የበቆሎ እርሻ ረዳት",
+    languageLabel: "ቋንቋ ይምረጡ",
+    questionTitle: "ስለ በቆሎ እርሻ ጥያቄ ይጠይቁ",
+    placeholder: "ምሳሌ፦ በቆሎ ላይ ማዳበሪያ መቼ መጠቀም አለብኝ?",
+    adviceButton: "የበቆሎ ምክር ያግኙ",
+
+    fertilizer: "ማዳበሪያ",
+    pests: "ተባዮችና በሽታዎች",
+    weather: "የአየር ሁኔታ",
+    harvest: "መሰብሰብ",
+    market: "ገበያ",
+
+    answerTitle: "ምክር",
+    aboutTitle: "ስለ Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI አነስተኛ የበቆሎ አርሶ አደሮችን በተግባራዊ እና ከአየር ንብረት ጋር ተስማሚ መረጃ ለመደገፍ የተዘጋጀ ፕሮቶታይፕ ነው።",
+
+    status:
+      "ይህ የፕሮቶታይፕ ስሪት ነው። ወደፊት Mistral AI፣ MCP መሳሪያዎች፣ የአየር ሁኔታ እና የገበያ መረጃ ሊገናኙበት ይችላሉ።",
+
+    footer:
+      "Agri-Vincent AI | ዘመናዊ የበቆሎ እርሻ",
+
+    fertilizerExample:
+      "በቆሎ ላይ ማዳበሪያ መቼ መጠቀም አለብኝ?",
+
+    pestsExample:
+      "በቆሎዬ ላይ ተባዮች ካሉ ምን ላድርግ?",
+
+    weatherExample:
+      "የአየር ሁኔታ የበቆሎ እርሻን እንዴት ይጎዳል?",
+
+    harvestExample:
+      "በቆሎ ለመሰብሰብ መቼ ዝግጁ ይሆናል?",
+
+    marketExample:
+      "ለበቆሎ ጥሩ ገበያ እንዴት ማግኘት እችላለሁ?",
+
+    fertilizerAdvice:
+      "በሰብሉ የእድገት ደረጃ እና በአፈር ሁኔታ መሠረት ማዳበሪያ ይጠቀሙ። የአካባቢዎን የግብርና ባለሙያዎች ምክር ይከተሉ።",
+
+    pestAdvice:
+      "ተባዮችንና በሽታዎችን በጊዜ ለመለየት እርሻዎን በመደበኛነት ይመርምሩ። ጥራት ያላቸውን ዘሮች ይጠቀሙ።",
+
+    weatherAdvice:
+      "ከመትከል ወይም ማዳበሪያ ከመጠቀም በፊት የአየር ሁኔታ ትንበያን ይከታተሉ። ከከባድ ዝናብ በፊት ማዳበሪያ ከመጠቀም ይቆጠቡ።",
+
+    harvestAdvice:
+      "የበቆሎ ፍሬዎች ሲበስሉና በቂ ሲደርቁ ይሰብስቡ። በንጹህ፣ ደረቅና አስተማማኝ ቦታ ያከማቹ።",
+
+    marketAdvice:
+      "ከመሰብሰብ በፊት ገዢዎችን ይፈልጉ፣ በተለያዩ ገበያዎች ያሉ ዋጋዎችን ያወዳድሩ።"
+  },
+
+
+  ha: {
+    title: "Agri-Vincent AI",
+    subtitle: "Mataimakin Noman Masara Mai La'akari da Yanayi",
+    languageLabel: "Zaɓi harshe",
+    questionTitle: "Yi tambaya game da noman masara",
+    placeholder: "Misali: Yaushe zan sa taki ga masara?",
+    adviceButton: "Sami Shawarar Masara",
+
+    fertilizer: "Taki",
+    pests: "Kwari da Cututtuka",
+    weather: "Yanayi",
+    harvest: "Girbi",
+    market: "Kasuwa",
+
+    answerTitle: "Shawara",
+    aboutTitle: "Game da Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI samfurin gwaji ne da aka tsara don tallafa wa ƙananan manoman masara da bayanai masu amfani da suka dace da yanayi.",
+
+    status:
+      "Wannan sigar gwaji ce. A nan gaba za a iya haɗa Mistral AI, kayan aikin MCP, bayanan yanayi da bayanan kasuwa.",
+
+    footer:
+      "Agri-Vincent AI | Noman Masara Mai Zamani",
+
+    fertilizerExample:
+      "Yaushe zan sa taki ga masara?",
+
+    pestsExample:
+      "Me zan yi idan masarata tana da kwari ko cututtuka?",
+
+    weatherExample:
+      "Ta yaya yanayi ke shafar noman masara?",
+
+    harvestExample:
+      "Yaushe masara take shirye don girbi?",
+
+    marketExample:
+      "Ta yaya zan sami kasuwa mai kyau ta masara?",
+
+    fertilizerAdvice:
+      "Yi amfani da taki bisa ga matakin girman amfanin gona da yanayin ƙasa. Bi shawarwarin masana noma na yankinku.",
+
+    pestAdvice:
+      "Duba gonar ku akai-akai domin gano kwari da cututtuka da wuri. Yi amfani da ingantattun iri da hanyoyin sarrafa kwari.",
+
+    weatherAdvice:
+      "Bi hasashen yanayi kafin shuka ko amfani da taki. Guji amfani da taki kafin ruwan sama mai yawa.",
+
+    harvestAdvice:
+      "Girbi masara lokacin da ta nuna balaga kuma ta bushe sosai. Ajiye ta a wuri mai tsafta, bushe kuma mai aminci.",
+
+    marketAdvice:
+      "Nemo masu saye kafin girbi, kwatanta farashi a kasuwanni daban-daban kuma adana masara yadda ya kamata."
+  },
+
+
+  yo: {
+    title: "Agri-Vincent AI",
+    subtitle: "Olùrànlọ́wọ́ fún Ogbìn Àgbàdo Tó Ń Ronú Nípa Ojú-ọjọ́",
+    languageLabel: "Yan èdè",
+    questionTitle: "Béèrè ìbéèrè nípa ogbin àgbàdo",
+    placeholder: "Àpẹẹrẹ: Nígbà wo ni mo yẹ kí n lo ajile sí àgbàdo?",
+    adviceButton: "Gba Ìmọ̀ràn Àgbàdo",
+
+    fertilizer: "Ajile",
+    pests: "Kokoro àti Àrùn",
+    weather: "Ojú-ọjọ́",
+    harvest: "Ikórè",
+    market: "Ọjà",
+
+    answerTitle: "Ìmọ̀ràn",
+    aboutTitle: "Nípa Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI jẹ́ àpẹẹrẹ ètò tí a ṣe láti ṣèrànwọ́ fún àwọn àgbẹ̀ kékeré tí ń gbin àgbàdo.",
+
+    status:
+      "Èyí jẹ́ àtúnṣe àpẹẹrẹ. Ní ọjọ́ iwájú, Mistral AI, MCP, ìsọfúnni ojú-ọjọ́ àti ọjà lè wà nínú ètò náà.",
+
+    footer:
+      "Agri-Vincent AI | Ogbìn Àgbàdo Òde-òní",
+
+    fertilizerExample:
+      "Nígbà wo ni mo yẹ kí n lo ajile sí àgbàdo?",
+
+    pestsExample:
+      "Kí ni mo lè ṣe tí àgbàdo mi bá ní kokoro?",
+
+    weatherExample:
+      "Báwo ni ojú-ọjọ́ ṣe ń kan ogbin àgbàdo?",
+
+    harvestExample:
+      "Nígbà wo ni àgbàdo ti ṣetán fún ikórè?",
+
+    marketExample:
+      "Báwo ni mo ṣe lè rí ọjà rere fún àgbàdo?",
+
+    fertilizerAdvice:
+      "Lo ajile gẹ́gẹ́ bí ìpele ìdàgbàsókè ohun ọ̀gbìn àti ipò ilẹ̀. Tẹ̀lé ìmọ̀ràn àwọn amòye iṣẹ́-ogbin.",
+
+    pestAdvice:
+      "Ṣàyẹ̀wò oko rẹ déédéé láti rí kokoro àti àrùn ní kutukutu. Lo irúgbìn tó dára àti ọ̀nà tó yẹ fún ìṣàkóso kokoro.",
+
+    weatherAdvice:
+      "Tẹ̀lé àsọtẹ́lẹ̀ ojú-ọjọ́ kí o tó gbin tàbí lo ajile. Yẹra fún lílo ajile ṣáájú òjò líle.",
+
+    harvestAdvice:
+      "Kórè àgbàdo nígbà tí ó bá ti dàgbà tó sì ti gbẹ dáadáa. Fi pamọ́ sí ibi mímọ́, gbígbẹ àti ààbò.",
+
+    marketAdvice:
+      "Wa àwọn oníbàárà kí o tó kórè, fi owó ọjà oríṣiríṣi wé ara wọn, kí o sì tọ́jú àgbàdo dáadáa."
+  },
+
+
+  zu: {
+    title: "Agri-Vincent AI",
+    subtitle: "Umsizi Wokulima Ummbila Ohlakaniphile Ngokwesimo Sezulu",
+    languageLabel: "Khetha ulimi",
+    questionTitle: "Buza umbuzo ngokulima ummbila",
+    placeholder: "Isibonelo: Kufanele ngifake nini umanyolo kummbila?",
+    adviceButton: "Thola Iseluleko Ngombila",
+
+    fertilizer: "Umanyolo",
+    pests: "Izinambuzane Nezifo",
+    weather: "Isimo Sezulu",
+    harvest: "Ukuvuna",
+    market: "Imakethe",
+
+    answerTitle: "Iseluleko",
+    aboutTitle: "Mayelana ne-Agri-Vincent AI",
+
+    aboutText:
+      "I-Agri-Vincent AI iyiprototype eyenzelwe ukweseka abalimi abancane bommbila ngolwazi olusebenzayo noluhambisana nesimo sezulu.",
+
+    status:
+      "Lena inguqulo ye-prototype. Esikhathini esizayo ingahlanganisa i-Mistral AI, amathuluzi e-MCP, ulwazi lwesimo sezulu kanye nedatha yemakethe.",
+
+    footer:
+      "Agri-Vincent AI | Ukulima Ummbila Okuhlakaniphile",
+
+    fertilizerExample:
+      "Kufanele ngifake nini umanyolo kummbila?",
+
+    pestsExample:
+      "Ngenzenjani uma ummbila wami unezinambuzane?",
+
+    weatherExample:
+      "Isimo sezulu sikuthinta kanjani ukulima ummbila?",
+
+    harvestExample:
+      "Ummbila usulungele nini ukuvunwa?",
+
+    marketExample:
+      "Ngingayithola kanjani imakethe enhle yommbila?",
+
+    fertilizerAdvice:
+      "Sebenzisa umanyolo ngokuya ngesigaba sokukhula kwesitshalo kanye nesimo somhlabathi. Landela izincomo zochwepheshe bezolimo bendawo.",
+
+    pestAdvice:
+      "Hlola insimu njalo ukuze uthole izinambuzane nezifo kusenesikhathi. Sebenzisa imbewu esezingeni elihle nezindlela ezifanele zokulawula izinambuzane.",
+
+    weatherAdvice:
+      "Landela izibikezelo zesimo sezulu ngaphambi kokutshala noma ukufaka umanyolo. Gwema ukufaka umanyolo ngaphambi kwemvula enkulu.",
+
+    harvestAdvice:
+      "Vuna ummbila lapho izinhlamvu sezivuthiwe futhi zomile ngokwanele. Wugcine endaweni ehlanzekile, eyomile nephephile.",
+
+    marketAdvice:
+      "Thola abathengi ngaphambi kokuvuna, qhathanisa amanani ezimakethe ezahlukene futhi ugcine ummbila kahle."
+  },
+
+
+  pt: {
+    title: "Agri-Vincent AI",
+    subtitle: "Assistente para Agricultura de Milho Inteligente face ao Clima",
+    languageLabel: "Escolher idioma",
+    questionTitle: "Faça uma pergunta sobre o cultivo de milho",
+    placeholder: "Exemplo: Quando devo aplicar fertilizante no milho?",
+    adviceButton: "Obter conselhos sobre milho",
+
+    fertilizer: "Fertilizante",
+    pests: "Pragas e doenças",
+    weather: "Clima",
+    harvest: "Colheita",
+    market: "Mercado",
+
+    answerTitle: "Conselho",
+    aboutTitle: "Sobre o Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI é um protótipo criado para apoiar pequenos agricultores de milho com informações práticas e inteligentes face ao clima.",
+
+    status:
+      "Versão protótipo. Futuras versões poderão integrar Mistral AI, ferramentas MCP, informações meteorológicas e dados de mercado.",
+
+    footer:
+      "Agri-Vincent AI | Agricultura de Milho Inteligente",
+
+    fertilizerExample:
+      "Quando devo aplicar fertilizante no milho?",
+
+    pestsExample:
+      "O que devo fazer se o meu milho tiver pragas ou doenças?",
+
+    weatherExample:
+      "Como o clima afeta o cultivo de milho?",
+
+    harvestExample:
+      "Quando o milho está pronto para a colheita?",
+
+    marketExample:
+      "Como posso encontrar um bom mercado para milho?",
+
+    fertilizerAdvice:
+      "Aplique fertilizante de acordo com a fase de crescimento da cultura e as condições do solo. Siga as recomendações agrícolas locais.",
+
+    pestAdvice:
+      "Inspecione regularmente a sua plantação para identificar pragas e doenças cedo. Use sementes de qualidade e métodos adequados de controlo de pragas.",
+
+    weatherAdvice:
+      "Acompanhe as previsões meteorológicas antes de plantar ou aplicar fertilizante. Evite aplicar fertilizante antes de chuvas fortes.",
+
+    harvestAdvice:
+      "Colha o milho quando estiver maduro e suficientemente seco. Armazene-o num local limpo, seco e seguro.",
+
+    marketAdvice:
+      "Procure compradores antes da colheita, compare os preços dos diferentes mercados e armazene o milho adequadamente."
+  },
+
+
+  es: {
+    title: "Agri-Vincent AI",
+    subtitle: "Asistente para la Agricultura Inteligente de Maíz Adaptada al Clima",
+    languageLabel: "Elegir idioma",
+    questionTitle: "Haz una pregunta sobre el cultivo de maíz",
+    placeholder: "Ejemplo: ¿Cuándo debo aplicar fertilizante al maíz?",
+    adviceButton: "Obtener consejos sobre maíz",
+
+    fertilizer: "Fertilizante",
+    pests: "Plagas y enfermedades",
+    weather: "Clima",
+    harvest: "Cosecha",
+    market: "Mercado",
+
+    answerTitle: "Consejo",
+    aboutTitle: "Sobre Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI es un prototipo diseñado para apoyar a pequeños agricultores de maíz con información práctica e inteligente adaptada al clima.",
+
+    status:
+      "Versión prototipo. Las futuras versiones podrán integrar Mistral AI, herramientas MCP, información meteorológica y datos de mercado.",
+
+    footer:
+      "Agri-Vincent AI | Agricultura Inteligente de Maíz",
+
+    fertilizerExample:
+      "¿Cuándo debo aplicar fertilizante al maíz?",
+
+    pestsExample:
+      "¿Qué debo hacer si mi maíz tiene plagas o enfermedades?",
+
+    weatherExample:
+      "¿Cómo afecta el clima al cultivo de maíz?",
+
+    harvestExample:
+      "¿Cuándo está listo el maíz para la cosecha?",
+
+    marketExample:
+      "¿Cómo puedo encontrar un buen mercado para el maíz?",
+
+    fertilizerAdvice:
+      "Aplique fertilizante según la etapa de crecimiento del cultivo y las condiciones del suelo. Siga las recomendaciones de los expertos agrícolas locales.",
+
+    pestAdvice:
+      "Inspeccione regularmente su campo para identificar plagas y enfermedades a tiempo. Use semillas de calidad y métodos adecuados de control de plagas.",
+
+    weatherAdvice:
+      "Consulte las previsiones meteorológicas antes de plantar o aplicar fertilizante. Evite aplicar fertilizante antes de lluvias fuertes.",
+
+    harvestAdvice:
+      "Coseche el maíz cuando los granos estén maduros y suficientemente secos. Guárdelo en un lugar limpio, seco y seguro.",
+
+    marketAdvice:
+      "Busque compradores antes de la cosecha, compare los precios de diferentes mercados y almacene correctamente el maíz."
+  },
+
+
+  ar: {
+    title: "Agri-Vincent AI",
+    subtitle: "مساعد لزراعة الذرة الذكية والمراعية للمناخ",
+    languageLabel: "اختر اللغة",
+    questionTitle: "اطرح سؤالاً حول زراعة الذرة",
+    placeholder: "مثال: متى يجب أن أضع السماد للذرة؟",
+    adviceButton: "احصل على نصائح حول الذرة",
+
+    fertilizer: "السماد",
+    pests: "الآفات والأمراض",
+    weather: "الطقس",
+    harvest: "الحصاد",
+    market: "السوق",
+
+    answerTitle: "النصيحة",
+    aboutTitle: "حول Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI هو نموذج أولي مصمم لدعم صغار مزارعي الذرة بمعلومات عملية وذكية تراعي تغير المناخ.",
+
+    status:
+      "هذه نسخة أولية. يمكن للإصدارات المستقبلية دمج Mistral AI وأدوات MCP ومعلومات الطقس وبيانات السوق.",
+
+    footer:
+      "Agri-Vincent AI | زراعة الذرة الذكية",
+
+    fertilizerExample:
+      "متى يجب أن أضع السماد للذرة؟",
+
+    pestsExample:
+      "ماذا أفعل إذا كانت الذرة مصابة بالآفات أو الأمراض؟",
+
+    weatherExample:
+      "كيف يؤثر الطقس على زراعة الذرة؟",
+
+    harvestExample:
+      "متى تكون الذرة جاهزة للحصاد؟",
+
+    marketExample:
+      "كيف يمكنني العثور على سوق جيد للذرة؟",
+
+    fertilizerAdvice:
+      "استخدم السماد وفقاً لمرحلة نمو المحصول وظروف التربة. اتبع توصيات خبراء الزراعة المحليين.",
+
+    pestAdvice:
+      "افحص الحقل بانتظام لاكتشاف الآفات والأمراض مبكراً. استخدم بذوراً جيدة وطرقاً مناسبة لمكافحة الآفات.",
+
+    weatherAdvice:
+      "تابع توقعات الطقس قبل الزراعة أو استخدام السماد. تجنب وضع السماد قبل هطول أمطار غزيرة.",
+
+    harvestAdvice:
+      "احصد الذرة عندما تنضج الحبوب وتجف بشكل كافٍ. خزّنها في مكان نظيف وجاف وآمن.",
+
+    marketAdvice:
+      "ابحث عن المشترين قبل الحصاد، وقارن الأسعار في الأسواق المختلفة، وخزّن الذرة بطريقة مناسبة."
+  },
+
+
+  zh: {
+    title: "Agri-Vincent AI",
+    subtitle: "气候智能型玉米种植助手",
+    languageLabel: "选择语言",
+    questionTitle: "询问玉米种植问题",
+    placeholder: "例如：我什么时候应该给玉米施肥？",
+    adviceButton: "获取玉米种植建议",
+
+    fertilizer: "肥料",
+    pests: "害虫和疾病",
+    weather: "天气",
+    harvest: "收获",
+    market: "市场",
+
+    answerTitle: "建议",
+    aboutTitle: "关于 Agri-Vincent AI",
+
+    aboutText:
+      "Agri-Vincent AI 是一个旨在帮助小规模玉米种植者获得实用、气候智能型农业信息的原型系统。",
+
+    status:
+      "这是原型版本。未来版本可以集成 Mistral AI、MCP 工具、天气信息和市场数据。",
+
+    footer:
+      "Agri-Vincent AI | 气候智能型玉米种植",
+
+    fertilizerExample:
+      "我什么时候应该给玉米施肥？",
+
+    pestsExample:
+      "如果我的玉米有害虫或疾病，我应该怎么办？",
+
+    weatherExample:
+      "天气如何影响玉米种植？",
+
+    harvestExample:
+      "玉米什么时候可以收获？",
+
+    marketExample:
+      "我怎样才能找到好的玉米市场？",
+
+    fertilizerAdvice:
+      "根据作物生长阶段和土壤状况施肥。请遵循当地农业专家的建议。",
+
+    pestAdvice:
+      "定期检查农田，以便及早发现害虫和疾病。使用优质种子和适当的害虫防治方法。",
+
+    weatherAdvice:
+      "在种植或施肥前关注天气预报。避免在大雨前施肥。",
+
+    harvestAdvice:
+      "当玉米籽粒成熟并充分干燥时进行收获。将玉米储存在干净、干燥和安全的地方。",
+
+    marketAdvice:
+      "在收获前寻找买家，比较不同市场的价格，并妥善储存玉米。"
+  }
+
+};
+
+
+function changeLanguage() {
+
+  currentLanguage =
+    document.getElementById("language").value;
+
+  const t = translations[currentLanguage];
+
+  document.getElementById("title").textContent = t.title;
+  document.getElementById("subtitle").textContent = t.subtitle;
+  document.getElementById("languageLabel").textContent = t.languageLabel;
+  document.getElementById("questionTitle").textContent = t.questionTitle;
+  document.getElementById("question").placeholder = t.placeholder;
+  document.getElementById("adviceButton").textContent = t.adviceButton;
+
+  document.getElementById("fertilizerBtn").textContent = t.fertilizer;
+  document.getElementById("pestsBtn").textContent = t.pests;
+  document.getElementById("weatherBtn").textContent = t.weather;
+  document.getElementById("harvestBtn").textContent = t.harvest;
+  document.getElementById("marketBtn").textContent = t.market;
+
+  document.getElementById("answerTitle").textContent = t.answerTitle;
+  document.getElementById("aboutTitle").textContent = t.aboutTitle;
+  document.getElementById("aboutText").textContent = t.aboutText;
+  document.getElementById("status").textContent = t.status;
+  document.getElementById("footer").textContent = t.footer;
+
+  document.body.dir =
+    currentLanguage === "ar" ? "rtl" : "ltr";
+}
+
+
+function useExample(type) {
+
+  const t = translations[currentLanguage];
+
+  document.getElementById("question").value =
+    t[type + "Example"];
+}
+
+
+function getAdvice() {
+
+  const question =
+    document.getElementById("question").value.toLowerCase().trim();
+
+  const t = translations[currentLanguage];
+
+  let advice = "";
+
+  if (
+    question.includes("fertilizer") ||
+    question.includes("fertilizante") ||
+    question.includes("engrais") ||
+    question.includes("mbolea") ||
+    question.includes("ifumbire") ||
+    question.includes("taki") ||
+    question.includes("ajile") ||
+    question.includes("umanyolo") ||
+    question.includes("ማዳበሪያ")
+  ) {
+    advice = t.fertilizerAdvice;
+
+  } else if (
+    question.includes("pest") ||
+    question.includes("disease") ||
+    question.includes("ravageur") ||
+    question.includes("maladie") ||
+    question.includes("wadudu") ||
+    question.includes("magonjwa") ||
+    question.includes("udukoko") ||
+    question.includes("indwara") ||
+    question.includes("kwari") ||
+    question.includes("kokoro") ||
+    question.includes("izinambuzane") ||
+    question.includes("ተባዮች")
+  ) {
+    advice = t.pestAdvice;
+
+  } else if (
+    question.includes("weather") ||
+    question.includes("climate") ||
+    question.includes("météo") ||
+    question.includes("hali ya hewa") ||
+    question.includes("ikirere") ||
+    question.includes("የአየር") ||
+    question.includes("yanayi") ||
+    question.includes("ojú-ọjọ") ||
+    question.includes("isimo sezulu") ||
+    question.includes("الطقس") ||
+    question.includes("天气")
+  ) {
+    advice = t.weatherAdvice;
+
+  } else if (
+    question.includes("harvest") ||
+    question.includes("récolte") ||
+    question.includes("uvunaji") ||
+    question.includes("gusarura") ||
+    question.includes("መሰብሰብ") ||
+    question.includes("girbi") ||
+    question.includes("ikórè") ||
+    question.includes("ukuvuna") ||
+    question.includes("الحصاد") ||
+    question.includes("收获")
+  ) {
+    advice = t.harvestAdvice;
+
+  } else if (
+    question.includes("market") ||
+    question.includes("marché") ||
+    question.includes("soko") ||
+    question.includes("isoko") ||
+    question.includes("ገበያ") ||
+    question.includes("kasuwa") ||
+    question.includes("ọjà") ||
+    question.includes("imakethe") ||
+    question.includes("السوق") ||
+    question.includes("市场")
+  ) {
+    advice = t.marketAdvice;
+
+  } else {
+
+    if (currentLanguage === "rw") {
+      advice =
+        "Andika ikibazo kijyanye n'ifumbire, udukoko n'indwara, ikirere, gusarura cyangwa isoko ry'ibigori.";
+
+    } else if (currentLanguage === "en") {
+      advice =
+        "Please ask a question about fertilizer, pests and diseases, weather, harvest or maize markets.";
+
+    } else if (currentLanguage === "fr") {
+      advice =
+        "Veuillez poser une question sur les engrais, les ravageurs et maladies, la météo, la récolte ou le marché du maïs.";
+
+    } else if (currentLanguage === "sw") {
+      advice =
+        "Uliza swali kuhusu mbolea, wadudu na magonjwa, hali ya hewa, uvunaji au soko la mahindi.";
+
+    } else if (currentLanguage === "am") {
+      advice =
+        "ስለ ማዳበሪያ፣ ተባዮችና በሽታዎች፣ የአየር ሁኔታ፣ መሰብሰብ ወይም ገበያ ጥያቄ ይጠይቁ።";
+
+    } else if (currentLanguage === "ha") {
+      advice =
+        "Yi tambaya game da taki, kwari da cututtuka, yanayi, girbi ko kasuwar masara.";
+
+    } else if (currentLanguage === "yo") {
+      advice =
+        "Béèrè ìbéèrè nípa ajile, kokoro àti àrùn, ojú-ọjọ́, ikórè tàbí ọjà àgbàdo.";
+
+    } else if (currentLanguage === "zu") {
+      advice =
+        "Buza umbuzo ngomanyolo, izinambuzane nezifo, isimo sezulu, ukuvuna noma imakethe yommbila.";
+
+    } else if (currentLanguage === "pt") {
+      advice =
+        "Faça uma pergunta sobre fertilizantes, pragas e doenças, clima, colheita ou mercado de milho.";
+
+    } else if (currentLanguage === "es") {
+      advice =
+        "Haz una pregunta sobre fertilizantes, plagas y enfermedades, clima, cosecha o mercado de maíz.";
+
+    } else if (currentLanguage === "ar") {
+      advice =
+        "اطرح سؤالاً حول السماد أو الآفات والأمراض أو الطقس أو الحصاد أو سوق الذرة.";
+
+    } else if (currentLanguage === "zh") {
+      advice =
+        "请询问有关肥料、害虫和疾病、天气、收获或玉米市场的问题.";
+
+    } else {
+      advice = t.aboutText;
+    }
+  }
+
+  const answer =
+    document.getElementById("answer");
+
+  answer.style.display = "block";
+  answer.textContent = advice;
+}
+
+
+changeLanguage();
+
+</script>
+
+</body>
+</html>
