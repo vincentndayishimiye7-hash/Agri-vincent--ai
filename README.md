@@ -1,170 +1,183 @@
-Agri-Vincent AI – Agentic AI for Climate-Smart Maize Farming
-
-Overview
-
-Agri-Vincent AI is a planned Agentic AI solution designed to support smallholder maize farmers in Rwanda, starting in Nyagatare District.
-
-The solution aims to provide localized and practical decision support throughout the maize farming cycle, including planting, fertilizer management, weather-related decisions, pest and disease management, harvesting, storage, and market planning.
-
-Problem
-
-Smallholder maize farmers face challenges such as:
-
-- Limited access to reliable and timely agricultural information
-- Climate variability, irregular rainfall, and drought risks
-- Limited access to quality agricultural inputs and modern technologies
-- Limited mechanization
-- Limited access to affordable financing
-- Post-harvest losses and limited storage
-- Difficulty accessing reliable markets and market information
-
-These challenges can contribute to low productivity, high production costs, post-harvest losses, and low farm income.
-
-Proposed Solution
-
-Agri-Vincent AI will use Agentic AI to help farmers make better decisions by combining an AI agent, agricultural knowledge, farmer context, and external information sources.
-
-The agent is intended to:
-
-1. Understand the farmer's question, goal, or situation.
-2. Ask follow-up questions when additional information is needed.
-3. Reason over available agricultural knowledge and farmer context.
-4. Retrieve relevant information from connected data sources.
-5. Generate practical recommendations.
-6. Support multi-step agricultural workflows.
-7. Provide follow-up recommendations and reminders where appropriate.
-
-Target Users
-
-The initial target users are smallholder maize farmers in Rwanda, particularly in Nyagatare District.
-
-Other potential beneficiaries include:
-
-- Youth and women working in agriculture
-- Farmer cooperatives
-- Agricultural extension workers
-- Agricultural service providers
-
-Agentic AI Architecture
-
-The planned architecture includes:
-
-Farmer → Agri-Vincent AI Agent → Mistral AI LLM → MCP Client → MCP Servers → MCP Tools/Resources → External APIs/Data → Agent → Recommendation → Farmer
-
-The system will also use a knowledge base and farmer context/memory to improve the relevance of recommendations.
-
-Human-in-the-loop support will allow agricultural extension workers or experts to review, validate, and provide feedback where necessary.
-
-Mistral AI
-
-Mistral AI models are planned as the primary language and reasoning models for the Agri-Vincent AI agent.
-
-The models will support:
-
-- Natural-language understanding
-- Agricultural reasoning
-- Information synthesis
-- Recommendation generation
-- Multi-step task support
-
-MCP Integration
-
-Model Context Protocol (MCP) is not yet implemented in the current version of Agri-Vincent AI.
-
-MCP is planned for the next development stage to provide a modular way for the AI agent to access external tools and resources.
-
-Planned MCP Components
-
-MCP Client
-
-- Connects the Agri-Vincent AI agent to MCP servers.
-
-Planned MCP Servers
-
-- Weather information server
-- Agricultural knowledge server
-- Market information server
-
-Planned MCP Tools/Resources
-
-- Weather data
-- Crop and maize production knowledge
-- Market-price information
-
-External APIs
-
-Future integrations may include:
-
-- Weather APIs
-- Agricultural information APIs
-- Market-price APIs
-
-These integrations are part of the planned architecture and are not presented as currently deployed functionality.
-
-Data Sources
-
-Potential data sources include:
-
-- Local agricultural knowledge
-- Maize production guidelines
-- Crop calendars
-- Farmer profiles and context
-- Weather information
-- Market information
-
-Knowledge Base and Memory
-
-The planned system may use:
-
-- PostgreSQL
-- pgvector
-- Retrieval-Augmented Generation (RAG)
-- Farmer context and short-term memory
-
-These components are intended to help the agent retrieve relevant information and provide context-aware recommendations.
-
-Human-in-the-Loop
-
-Agricultural extension workers or qualified experts may participate in the workflow by:
-
-- Reviewing recommendations
-- Validating important agricultural advice
-- Providing feedback
-- Supporting cases that require human expertise
-
-Current Development Status
-
-Agri-Vincent AI is currently at the planned architecture and development stage.
-
-The MCP integration has not yet been implemented or deployed.
-
-The next development stages will focus on building the agent, integrating agricultural knowledge and data sources, implementing MCP-based tool access, and testing the system with relevant agricultural use cases.
-
-African Context
-
-The project is designed around the realities of smallholder farming in Rwanda and the wider African agricultural context.
-
-It focuses on:
-
-- Localized agricultural advice
-- Climate-smart farming
-- Accessibility for smallholder farmers
-- Potential local-language interaction
-- Affordable digital support
-- Youth and women's participation in agriculture
-
-Future Development
-
-Future development will focus on:
-
-1. Building and testing the Agri-Vincent AI agent.
-2. Integrating Mistral AI models.
-3. Developing the agricultural knowledge base.
-4. Implementing the planned MCP client and servers.
-5. Connecting weather and market information tools.
-6. Testing recommendations with farmers and agricultural experts.
-7. Improving reliability, safety, and usability.
-
-Project Goal
-
-The long-term goal is to provide practical, accessible, and context-aware AI support that helps maize farmers improve productivity, manage climate risks, reduce losses, and make better farming and market decisions.
+# Agri-Vincent AI 🌽🤖  
+  
+## AI-Powered Climate-Smart Maize Farming Assistant for Africa  
+  
+Agri-Vincent AI is an open-source prototype designed to support smallholder maize farmers with practical, localized, and climate-smart farming guidance.  
+  
+The project focuses on helping maize farmers make better decisions about planting, fertilizer use, pests and diseases, weather risks, harvesting, storage, and market planning.  
+  
+The initial target context is Nyagatare District, Rwanda, with potential to scale to other African farming communities.  
+  
+---  
+  
+## 🌍 Problem Statement  
+  
+Smallholder maize farmers in Rwanda and across Africa face several challenges:  
+  
+- Limited access to quality agricultural inputs.  
+- Limited access to modern farming technologies.  
+- Limited access to reliable agricultural information.  
+- Unpredictable rainfall and drought risks.  
+- High production costs.  
+- Low or unstable maize yields.  
+- Limited mechanization for land preparation, weeding, and harvesting.  
+- Post-harvest losses caused by poor drying and storage.  
+- Limited access to reliable markets and market information.  
+- Pressure to sell maize immediately after harvest at low prices.  
+- Limited access to affordable agricultural financing.  
+- Difficulty accessing timely and understandable agricultural advice.  
+  
+These challenges can reduce farmer income, food security, and employment opportunities for young people and women.  
+  
+---  
+  
+## 💡 Proposed Solution  
+  
+Agri-Vincent AI provides a digital decision-support assistant for maize farmers.  
+  
+The system is designed to provide practical guidance based on farmer information such as:  
+  
+- Location  
+- Crop stage  
+- Farm size  
+- Soil condition  
+- Weather risk  
+- Pest or disease symptoms  
+- Harvest and grain condition  
+- Market and selling needs  
+  
+The long-term goal is to combine AI, agricultural knowledge, weather information, and market information to provide more personalized recommendations.  
+  
+---  
+  
+## 🎯 Target Users  
+  
+The primary users are:  
+  
+1. Smallholder maize farmers.  
+2. Youth involved in agriculture.  
+3. Women farmers and agricultural entrepreneurs.  
+4. Farmer cooperatives and farmer groups.  
+5. Agricultural extension workers.  
+6. Agricultural advisors.  
+7. Agribusinesses supporting maize farmers.  
+8. Development organizations working in agriculture.  
+  
+---  
+  
+## 🌱 Key Features  
+  
+### 1. Fertilizer Advice  
+  
+Provides general guidance on:  
+  
+- Fertilizer timing  
+- Soil considerations  
+- Nutrient management  
+- Organic matter  
+- Avoiding fertilizer losses  
+- Following local recommendations  
+  
+### 2. Pests and Diseases  
+  
+Provides guidance on:  
+  
+- Field inspection  
+- Identifying symptoms  
+- Integrated pest management  
+- Field sanitation  
+- Safe pesticide use  
+- When to consult an agricultural professional  
+  
+### 3. Weather and Climate-Smart Farming  
+  
+Provides guidance related to:  
+  
+- Variable rainfall  
+- Drought risk  
+- Planting timing  
+- Soil moisture  
+- Water conservation  
+- Climate resilience  
+- Weather monitoring  
+  
+### 4. Harvest and Storage  
+  
+Provides guidance on:  
+  
+- Harvest timing  
+- Drying  
+- Grain quality  
+- Storage  
+- Pest protection  
+- Rodent protection  
+- Reducing post-harvest losses  
+  
+### 5. Market Planning  
+  
+Provides guidance on:  
+  
+- Finding buyers  
+- Comparing legitimate market channels  
+- Storage versus immediate selling  
+- Transport and transaction costs  
+- Record keeping  
+- Farmer aggregation  
+  
+---  
+  
+## 🌍 Multilingual Support  
+  
+The frontend prototype is designed to support multiple languages:  
+  
+- Kinyarwanda  
+- English  
+- French  
+- Kiswahili  
+- Amharic  
+- Hausa  
+- Yoruba  
+- isiZulu  
+- Portuguese  
+- Spanish  
+- Arabic  
+- Chinese  
+  
+The goal is to make agricultural AI more accessible to farmers who may not be comfortable using English.  
+  
+---  
+  
+# 🤖 Agentic AI Architecture  
+  
+Agri-Vincent AI is being developed toward an agentic architecture where AI can:  
+  
+1. Understand a farmer's question.  
+2. Identify the farming problem.  
+3. Collect relevant farm context.  
+4. Select the appropriate agricultural tool.  
+5. Use external data sources when available.  
+6. Generate practical recommendations.  
+7. Explain the recommendation to the farmer.  
+8. Ask for additional information when necessary.  
+9. Escalate uncertain or high-risk cases to a human agricultural professional.  
+  
+### Planned Workflow  
+  
+```text  
+Farmer  
+   ↓  
+Agri-Vincent AI Interface  
+   ↓  
+AI Decision Layer  
+   ↓  
+Context & Problem Identification  
+   ↓  
+MCP Tools / Agricultural Knowledge  
+   ↓  
+Weather / Market / Farm Data  
+   ↓  
+Recommendation  
+   ↓  
+Farmer  
+   ↓  
+Human Agricultural Expert when necessary  
