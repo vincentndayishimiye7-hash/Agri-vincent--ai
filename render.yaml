@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: agri-vincent-mcp
+    runtime: docker
+    plan: free
+    healthCheckPath: /mcp
