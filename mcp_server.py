@@ -11,8 +11,6 @@ Prototype MCP implementation for:
 - market planning
 """
 
-from typing import Any
-
 from mcp.server.fastmcp import FastMCP
 
 
@@ -212,6 +210,11 @@ The AI provides decision support. The farmer or qualified agricultural
 professional remains responsible for the final farm decision.
 """
 
-
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(
+        transport="streamable-http",
+        host="0.0.0.0",
+        port=8000,
+        stateless_http=True,
+        json_response=True,
+    )
