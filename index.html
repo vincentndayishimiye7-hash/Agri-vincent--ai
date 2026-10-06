@@ -6,77 +6,147 @@
   <title>Agri-Vincent AI</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      background: #f4f7f4;
+      background: #f3f7f3;
       color: #222;
     }
 
     header {
-      background: #2e7d32;
+      background: linear-gradient(135deg, #1b5e20, #43a047);
       color: white;
       padding: 30px 20px;
       text-align: center;
     }
 
     header h1 {
-      margin: 0 0 10px;
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 5px 0;
+    }
+
+    .language-box {
+      margin: 20px auto 0;
+      max-width: 800px;
+      padding: 0 20px;
+      text-align: right;
+    }
+
+    select {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: white;
+      font-size: 15px;
     }
 
     .container {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 20px;
+      max-width: 850px;
+      margin: 25px auto;
+      padding: 0 20px;
     }
 
     .card {
       background: white;
       padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      border-radius: 15px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      color: #1b5e20;
     }
 
     textarea {
       width: 100%;
-      min-height: 120px;
-      padding: 12px;
+      min-height: 130px;
+      padding: 14px;
       margin-top: 10px;
       border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
+      border-radius: 10px;
       font-size: 16px;
+      resize: vertical;
     }
 
     button {
       margin-top: 15px;
-      padding: 12px 20px;
+      padding: 13px 22px;
       background: #2e7d32;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 9px;
       cursor: pointer;
       font-size: 16px;
+      font-weight: bold;
     }
 
     button:hover {
-      background: #256628;
+      background: #1b5e20;
+    }
+
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .example {
+      background: #e8f5e9;
+      color: #1b5e20;
+      border: 1px solid #c8e6c9;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
     }
 
     #response {
-      margin-top: 20px;
-      padding: 15px;
-      background: #eef6ee;
+      margin-top: 22px;
+      padding: 18px;
+      background: #eef7ee;
+      border-left: 5px solid #2e7d32;
       border-radius: 8px;
       display: none;
-      line-height: 1.6;
+      line-height: 1.7;
+    }
+
+    .features {
+      margin-top: 25px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .feature {
+      background: #f8fbf8;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid #e0e0e0;
     }
 
     footer {
       text-align: center;
-      padding: 25px;
+      padding: 30px 20px;
       color: #666;
-      font-size: 14px;
+      font-size: 13px;
+    }
+
+    .status {
+      margin-top: 15px;
+      padding: 10px;
+      background: #fff8e1;
+      border-radius: 8px;
+      font-size: 13px;
     }
   </style>
 </head>
@@ -84,147 +154,276 @@
 <body>
 
 <header>
-  <h1>Agri-Vincent AI</h1>
-  <p>Climate-Smart Maize Farming Assistant</p>
+  <h1>🌽 Agri-Vincent AI</h1>
+  <p id="subtitle">Climate-Smart Maize Farming Assistant</p>
 </header>
+
+<div class="language-box">
+  <select id="language" onchange="changeLanguage()">
+    <option value="rw">🇷🇼 Kinyarwanda</option>
+    <option value="en" selected>🇬🇧 English</option>
+    <option value="fr">🇫🇷 Français</option>
+    <option value="sw">🇹🇿 Kiswahili</option>
+    <option value="am">🇪🇹 Amharic</option>
+    <option value="ha">🇳🇬 Hausa</option>
+    <option value="yo">🇳🇬 Yoruba</option>
+    <option value="zu">🇿🇦 isiZulu</option>
+    <option value="pt">🇵🇹 Português</option>
+    <option value="es">🇪🇸 Español</option>
+    <option value="ar">🇸🇦 العربية</option>
+    <option value="zh">🇨🇳 中文</option>
+  </select>
+</div>
 
 <div class="container">
 
   <div class="card">
 
-    <h2>Ask about maize farming</h2>
+    <h2 id="title">Ask about maize farming</h2>
 
-    <p>
-      Ask a question about planting, fertilizer, pests,
-      weather, harvesting, storage, or maize markets.
+    <p id="description">
+      Ask a question about planting, fertilizer, pests, weather,
+      harvesting, storage, or maize markets.
     </p>
 
     <textarea id="question"
       placeholder="Example: When should I apply fertilizer to my maize?"></textarea>
 
-    <button onclick="getAdvice()">Get Maize Advice</button>
+    <div class="examples">
+      <button class="example" onclick="useExample('fertilizer')">
+        🌾 Fertilizer
+      </button>
+
+      <button class="example" onclick="useExample('pest')">
+        🐛 Pests
+      </button>
+
+      <button class="example" onclick="useExample('weather')">
+        🌦️ Weather
+      </button>
+
+      <button class="example" onclick="useExample('harvest')">
+        🌽 Harvest
+      </button>
+
+      <button class="example" onclick="useExample('market')">
+        💰 Market
+      </button>
+    </div>
+
+    <button onclick="getAdvice()" id="adviceButton">
+      Get Maize Advice
+    </button>
 
     <div id="response"></div>
+
+    <div class="features">
+      <div class="feature">🌱<br><strong id="f1">Planting</strong></div>
+      <div class="feature">🌾<br><strong id="f2">Fertilizer</strong></div>
+      <div class="feature">🐛<br><strong id="f3">Pests</strong></div>
+      <div class="feature">🌦️<br><strong id="f4">Climate</strong></div>
+      <div class="feature">🌽<br><strong id="f5">Harvest</strong></div>
+      <div class="feature">💰<br><strong id="f6">Markets</strong></div>
+    </div>
+
+    <div class="status" id="status">
+      Prototype demonstration: AI, weather, market and MCP integrations
+      can be connected in future development.
+    </div>
 
   </div>
 
 </div>
 
 <footer>
-  <p>
-    Agri-Vincent AI Prototype — Rwanda
-  </p>
-
-  <p>
-    Mistral AI integration, external APIs, and MCP integration
-    are planned for future development.
+  <p id="footerTitle">Agri-Vincent AI Prototype — Rwanda</p>
+  <p id="footerText">
+    Designed to support smallholder maize farmers with accessible,
+    climate-smart agricultural decision support.
   </p>
 </footer>
 
 <script>
 
-function getAdvice() {
+let currentLanguage = "en";
 
-  const question =
-    document.getElementById("question").value.toLowerCase();
+const translations = {
 
-  const response =
-    document.getElementById("response");
+  en: {
+    subtitle: "Climate-Smart Maize Farming Assistant",
+    title: "Ask about maize farming",
+    description: "Ask a question about planting, fertilizer, pests, weather, harvesting, storage, or maize markets.",
+    placeholder: "Example: When should I apply fertilizer to my maize?",
+    button: "Get Maize Advice",
+    fertilizer: "Fertilizer",
+    pest: "Pests",
+    weather: "Weather",
+    harvest: "Harvest",
+    market: "Market",
+    planting: "Planting",
+    climate: "Climate",
+    status: "Prototype demonstration: AI, weather, market and MCP integrations can be connected in future development.",
+    footerTitle: "Agri-Vincent AI Prototype — Rwanda",
+    footerText: "Designed to support smallholder maize farmers with accessible, climate-smart agricultural decision support.",
+    empty: "Please enter a maize farming question.",
+    fertilizerAnswer: "<strong>🌾 Fertilizer advice</strong><br>Fertilizer decisions should consider the maize growth stage, soil condition, planting date and locally recommended application rates. Avoid excessive fertilizer use. For farm-specific recommendations, consult an agricultural extension professional.",
+    pestAnswer: "<strong>🐛 Pest and disease advice</strong><br>Inspect maize leaves, stems and growing points regularly. Identify the pest or disease before applying any treatment. Early detection and integrated pest management can reduce crop losses.",
+    weatherAnswer: "<strong>🌦️ Weather advice</strong><br>Monitor rainfall and weather conditions before planting and fertilizer application. During drought risk, climate-smart practices such as moisture conservation and appropriate planting timing can reduce production risks.",
+    harvestAnswer: "<strong>🌽 Harvest advice</strong><br>Harvest maize at appropriate maturity and manage grain moisture carefully. Proper drying, clean storage and protection from pests can help reduce post-harvest losses.",
+    marketAnswer: "<strong>💰 Market advice</strong><br>Compare buyers and available market prices before selling. Good storage and market information can help farmers avoid forced sales when prices are low.",
+    plantingAnswer: "<strong>🌱 Planting advice</strong><br>Use quality seed, prepare the field properly and plant according to the recommended local planting calendar. Good spacing, soil preparation and timely planting can support better crop establishment.",
+    generalAnswer: "<strong>🤖 Agri-Vincent AI</strong><br>Your question has been received. This prototype demonstrates a farmer-support workflow. Future versions can connect Mistral AI models, agricultural knowledge, weather information, market data and MCP-based tools for more personalized recommendations."
+  },
 
-  if (question.trim() === "") {
+  rw: {
+    subtitle: "Umufasha mu buhinzi bw'ibigori bujyanye n'imihindagurikire y'ikirere",
+    title: "Baza ikibazo ku buhinzi bw'ibigori",
+    description: "Baza ku gutera, ifumbire, udukoko, ikirere, gusarura, kubika cyangwa amasoko y'ibigori.",
+    placeholder: "Urugero: Ni ryari nakoresha ifumbire ku bigori?",
+    button: "Bona inama ku bigori",
+    fertilizer: "Ifumbire",
+    pest: "Udukoko",
+    weather: "Ikirere",
+    harvest: "Gusarura",
+    market: "Isoko",
+    planting: "Gutera",
+    climate: "Ikirere",
+    status: "Iyi ni prototype. AI, amakuru y'ikirere, amasoko na MCP bishobora kongerwamo mu iterambere rizakurikiraho.",
+    footerTitle: "Agri-Vincent AI Prototype — Rwanda",
+    footerText: "Yagenewe gufasha abahinzi bato b'ibigori kubona amakuru n'inama zijyanye n'ubuhinzi burengera ikirere.",
+    empty: "Andika ikibazo kijyanye n'ubuhinzi bw'ibigori.",
+    fertilizerAnswer: "<strong>🌾 Inama ku ifumbire</strong><br>Gukoresha ifumbire bigomba kwita ku cyiciro ibigori bigezeho, uko ubutaka bumeze, igihe byatewe n'ingano y'ifumbire isabwa mu karere. Irinde gukoresha ifumbire irenze ikenewe. Ku nama zihariye ku murima wawe, baza umukozi ushinzwe ubujyanama mu buhinzi.",
+    pestAnswer: "<strong>🐛 Inama ku dukoko n'indwara</strong><br>Jya ugenzura amababi, ibiti n'aho ibigori bikura. Banza umenye udukoko cyangwa indwara mbere yo gukoresha umuti. Kumenya ikibazo hakiri kare bifasha kugabanya igihombo.",
+    weatherAnswer: "<strong>🌦️ Inama ku kirere</strong><br>Kurikirana imvura n'ikirere mbere yo gutera cyangwa gushyiraho ifumbire. Mu gihe cy'amapfa, uburyo bwo kubungabunga ubuhehere bw'ubutaka no gutera ku gihe bushobora kugabanya ingaruka.",
+    harvestAnswer: "<strong>🌽 Inama ku gusarura</strong><br>Sarura ibigori bigeze igihe gikwiye cyo gusarurwa kandi witondere ubuhehere bw'intete. Kumisha neza no kubika ahantu hasukuye kandi harinzwe bifasha kugabanya igihombo nyuma yo gusarura.",
+    marketAnswer: "<strong>💰 Inama ku isoko</strong><br>Gereranya abaguzi n'ibiciro biri ku isoko mbere yo kugurisha. Kubika neza ibigori no kugira amakuru y'isoko bishobora gufasha umuhinzi kwirinda kugurisha ku giciro gito kubera igitutu.",
+    plantingAnswer: "<strong>🌱 Inama ku gutera</strong><br>Koresha imbuto nziza, utegure umurima neza kandi utere ukurikije igihe cyo gutera gikwiriye mu karere. Intera nziza, gutegura ubutaka no gutera ku gihe bifasha ibigori gufata neza.",
+    generalAnswer: "<strong>🤖 Agri-Vincent AI</strong><br>Ikibazo cyawe cyakiriwe. Iyi prototype igaragaza uburyo umufasha w'umuhinzi ushobora gukora. Mu byiciro bizakurikiraho hashobora kongerwamo Mistral AI, ubumenyi mu buhinzi, amakuru y'ikirere, amasoko n'ibikoresho bya MCP kugira ngo inama zibe zihariye."
+  },
 
-    response.style.display = "block";
+  fr: {
+    subtitle: "Assistant pour une culture du maïs intelligente face au climat",
+    title: "Posez une question sur la culture du maïs",
+    description: "Posez une question sur la plantation, les engrais, les ravageurs, la météo, la récolte, le stockage ou les marchés.",
+    placeholder: "Exemple : Quand dois-je appliquer l'engrais sur mon maïs ?",
+    button: "Obtenir des conseils",
+    fertilizer: "Engrais",
+    pest: "Ravageurs",
+    weather: "Météo",
+    harvest: "Récolte",
+    market: "Marché",
+    planting: "Plantation",
+    climate: "Climat",
+    status: "Prototype : les intégrations IA, météo, marchés et MCP pourront être ajoutées dans les prochaines étapes.",
+    footerTitle: "Prototype Agri-Vincent AI — Rwanda",
+    footerText: "Conçu pour soutenir les petits producteurs de maïs avec des conseils agricoles accessibles et adaptés au climat.",
+    empty: "Veuillez saisir une question sur la culture du maïs.",
+    fertilizerAnswer: "<strong>🌾 Conseil sur les engrais</strong><br>Les décisions concernant les engrais doivent tenir compte du stade de croissance, du sol, de la date de plantation et des recommandations locales. Évitez les applications excessives.",
+    pestAnswer: "<strong>🐛 Conseil sur les ravageurs et maladies</strong><br>Inspectez régulièrement les feuilles et les tiges. Identifiez le ravageur ou la maladie avant tout traitement.",
+    weatherAnswer: "<strong>🌦️ Conseil météo</strong><br>Suivez les précipitations et les conditions météorologiques avant la plantation et l'application d'engrais. Les pratiques intelligentes face au climat peuvent réduire les risques.",
+    harvestAnswer: "<strong>🌽 Conseil de récolte</strong><br>Récoltez à maturité appropriée et contrôlez l'humidité des grains. Un bon séchage et un stockage propre réduisent les pertes.",
+    marketAnswer: "<strong>💰 Conseil de marché</strong><br>Comparez les acheteurs et les prix disponibles avant de vendre. Un bon stockage peut offrir plus de flexibilité.",
+    plantingAnswer: "<strong>🌱 Conseil de plantation</strong><br>Utilisez des semences de qualité, préparez correctement le champ et plantez selon le calendrier agricole local recommandé.",
+    generalAnswer: "<strong>🤖 Agri-Vincent AI</strong><br>Votre question a été reçue. Ce prototype démontre un flux d'assistance aux agriculteurs. Des modèles Mistral AI, des données agricoles, météo et marché ainsi que des outils MCP pourront être intégrés."
+  },
 
-    response.innerHTML =
-      "Please enter a maize farming question.";
+  sw: {
+    subtitle: "Msaidizi wa Kilimo cha Mahindi Kinachozingatia Mabadiliko ya Tabianchi",
+    title: "Uliza kuhusu kilimo cha mahindi",
+    description: "Uliza kuhusu upandaji, mbolea, wadudu, hali ya hewa, uvunaji, uhifadhi au masoko.",
+    placeholder: "Mfano: Ni wakati gani nitumie mbolea kwenye mahindi?",
+    button: "Pata Ushauri",
+    fertilizer: "Mbolea",
+    pest: "Wadudu",
+    weather: "Hali ya hewa",
+    harvest: "Uvunaji",
+    market: "Soko",
+    planting: "Upandaji",
+    climate: "Tabianchi",
+    status: "Hii ni mfano wa programu. AI, hali ya hewa, masoko na MCP vinaweza kuunganishwa katika hatua zijazo.",
+    footerTitle: "Agri-Vincent AI Prototype — Rwanda",
+    footerText: "Imeundwa kusaidia wakulima wadogo wa mahindi kupata ushauri wa kilimo unaopatikana kwa urahisi.",
+    empty: "Tafadhali andika swali kuhusu kilimo cha mahindi.",
+    fertilizerAnswer: "<strong>🌾 Ushauri wa mbolea</strong><br>Matumizi ya mbolea yanapaswa kuzingatia hatua ya ukuaji wa mahindi, hali ya udongo, tarehe ya kupanda na mapendekezo ya eneo.",
+    pestAnswer: "<strong>🐛 Ushauri wa wadudu na magonjwa</strong><br>Kagua majani na mashina mara kwa mara. Tambua tatizo kabla ya kutumia dawa.",
+    weatherAnswer: "<strong>🌦️ Ushauri wa hali ya hewa</strong><br>Fuatilia mvua na hali ya hewa kabla ya kupanda au kuweka mbolea. Kilimo kinachozingatia tabianchi kinaweza kupunguza hatari.",
+    harvestAnswer: "<strong>🌽 Ushauri wa uvunaji</strong><br>Vuna mahindi yanapofikia ukomavu unaofaa. Kukausha na kuhifadhi vizuri hupunguza hasara baada ya mavuno.",
+    marketAnswer: "<strong>💰 Ushauri wa soko</strong><br>Linganisha wanunuzi na bei za soko kabla ya kuuza. Uhifadhi mzuri unaweza kusaidia kuzuia kuuza kwa bei ya chini.",
+    plantingAnswer: "<strong>🌱 Ushauri wa upandaji</strong><br>Tumia mbegu bora, andaa shamba vizuri na panda kulingana na kalenda ya kilimo ya eneo lako.",
+    generalAnswer: "<strong>🤖 Agri-Vincent AI</strong><br>Swali lako limepokelewa. Mfano huu unaonyesha mfumo wa msaada kwa mkulima. Mistral AI, taarifa za kilimo, hali ya hewa, masoko na zana za MCP zinaweza kuunganishwa baadaye."
+  },
 
-    return;
-  }
+  am: {
+    subtitle: "የአየር ንብረትን የሚያገናዝብ የበቆሎ እርሻ ረዳት",
+    title: "ስለ በቆሎ እርሻ ይጠይቁ",
+    description: "ስለ መትከል፣ ማዳበሪያ፣ ተባዮች፣ የአየር ሁኔታ፣ መሰብሰብ፣ ማከማቸት ወይም ገበያ ይጠይቁ።",
+    placeholder: "ምሳሌ፦ በቆሎዬን መቼ ማዳበሪያ ልጠቀም?",
+    button: "ምክር ያግኙ",
+    fertilizer: "ማዳበሪያ",
+    pest: "ተባዮች",
+    weather: "የአየር ሁኔታ",
+    harvest: "መሰብሰብ",
+    market: "ገበያ",
+    planting: "መትከል",
+    climate: "አየር ንብረት",
+    status: "ይህ ፕሮቶታይፕ ነው። AI፣ የአየር ሁኔታ፣ ገበያ እና MCP በቀጣይ ደረጃዎች ሊገናኙ ይችላሉ።",
+    footerTitle: "Agri-Vincent AI Prototype — Rwanda",
+    footerText: "ለአነስተኛ የበቆሎ አርሶ አደሮች የእርሻ ድጋፍ ለመስጠት የተዘጋጀ።",
+    empty: "እባክዎ ስለ በቆሎ እርሻ ጥያቄ ያስገቡ።",
+    fertilizerAnswer: "<strong>🌾 የማዳበሪያ ምክር</strong><br>የማዳበሪያ አጠቃቀም የበቆሎ የእድገት ደረጃን፣ የአፈር ሁኔታን እና የአካባቢ ምክሮችን ማጤን አለበት።",
+    pestAnswer: "<strong>🐛 የተባይና በሽታ ምክር</strong><br>ቅጠሎችንና ግንዶችን በመደበኛነት ይመርምሩ። ሕክምና ከመጠቀም በፊት ችግሩን ይለዩ።",
+    weatherAnswer: "<strong>🌦️ የአየር ሁኔታ ምክር</strong><br>ከመትከል ወይም ማዳበሪያ ከመጠቀም በፊት የዝናብና የአየር ሁኔታን ይከታተሉ።",
+    harvestAnswer: "<strong>🌽 የመሰብሰብ ምክር</strong><br>በትክክለኛው የብስለት ደረጃ ይሰብስቡ። በትክክል ማድረቅና ማከማቸት ኪሳራን ይቀንሳል።",
+    marketAnswer: "<strong>💰 የገበያ ምክር</strong><br>ከመሸጥዎ በፊት ገዢዎችንና የገበያ ዋጋዎችን ያወዳድሩ።",
+    plantingAnswer: "<strong>🌱 የመትከል ምክር</strong><br>ጥራት ያለው ዘር ይጠቀሙ፣ መሬቱን በትክክል ያዘጋጁ እና በአካባቢዎ በሚመከረው ጊዜ ይትከሉ።",
+    generalAnswer: "<strong>🤖 Agri-Vincent AI</strong><br>ጥያቄዎ ተቀብሏል። ይህ ፕሮቶታይፕ ለአርሶ አደሮች የድጋፍ ሂደትን ያሳያል።"
+  },
 
-  let advice = "";
+  ha: {
+    subtitle: "Mataimakin Noman Masara Mai La'akari da Sauyin Yanayi",
+    title: "Tambayi game da noman masara",
+    description: "Tambayi game da shuka, taki, kwari, yanayi, girbi, ajiya ko kasuwar masara.",
+    placeholder: "Misali: Yaushe zan yi amfani da taki a masarana?",
+    button: "Samu Shawarar Masara",
+    fertilizer: "Taki",
+    pest: "Kwari",
+    weather: "Yanayi",
+    harvest: "Girbi",
+    market: "Kasuwa",
+    planting: "Shuka",
+    climate: "Yanayi",
+    status: "Wannan samfurin gwaji ne. Za a iya haɗa AI, bayanan yanayi, kasuwa da MCP a matakai masu zuwa.",
+    footerTitle: "Agri-Vincent AI Prototype — Rwanda",
+    footerText: "An tsara shi domin tallafa wa ƙananan manoman masara.",
+    empty: "Da fatan shigar da tambaya game da noman masara.",
+    fertilizerAnswer: "<strong>🌾 Shawarar taki</strong><br>Amfani da taki ya kamata ya yi la'akari da matakin girman masara, yanayin ƙasa, lokacin shuka da shawarwarin yankin.",
+    pestAnswer: "<strong>🐛 Shawarar kwari da cututtuka</strong><br>Duba ganyaye da tushe akai-akai. Gano matsalar kafin amfani da magani.",
+    weatherAnswer: "<strong>🌦️ Shawarar yanayi</strong><br>Bi diddigin ruwan sama da yanayi kafin shuka ko amfani da taki.",
+    harvestAnswer: "<strong>🌽 Shawarar girbi</strong><br>Girbi masara lokacin da ta kai matakin girbi. Busarwa da ajiya mai kyau na rage asara.",
+    marketAnswer: "<strong>💰 Shawarar kasuwa</strong><br>Kwatanta masu saya da farashin kasuwa kafin sayarwa.",
+    plantingAnswer: "<strong>🌱 Shawarar shuka</strong><br>Yi amfani da iri mai kyau kuma ka shuka bisa kalandar noma ta yankinka.",
+    generalAnswer: "<strong>🤖 Agri-Vincent AI</strong><br>An karɓi tambayarka. Wannan samfurin yana nuna tsarin taimakon manomi."
+  },
 
-  if (
-    question.includes("fertilizer") ||
-    question.includes("dap") ||
-    question.includes("urea")
-  ) {
-
-    advice =
-      "<strong>Fertilizer advice:</strong><br>" +
-      "Use fertilizer according to the maize growth stage " +
-      "and recommended local agricultural guidelines. " +
-      "Avoid applying more fertilizer than recommended. " +
-      "For accurate advice, farmer-specific information such as " +
-      "soil condition, planting date, and maize growth stage should " +
-      "be considered.";
-
-  } else if (
-    question.includes("pest") ||
-    question.includes("insect") ||
-    question.includes("disease")
-  ) {
-
-    advice =
-      "<strong>Pest and disease advice:</strong><br>" +
-      "Regularly inspect maize leaves and stems for signs of pests " +
-      "or disease. Early identification can reduce crop losses. " +
-      "Farmers should seek advice from an agricultural extension " +
-      "worker before applying pesticides.";
-
-  } else if (
-    question.includes("rain") ||
-    question.includes("weather") ||
-    question.includes("drought")
-  ) {
-
-    advice =
-      "<strong>Weather advice:</strong><br>" +
-      "Monitor rainfall and weather conditions before planting " +
-      "or applying fertilizer. During periods of rainfall uncertainty " +
-      "or drought risk, climate-smart farming practices can help " +
-      "reduce production risks.";
-
-  } else if (
-    question.includes("harvest") ||
-    question.includes("harvesting")
-  ) {
-
-    advice =
-      "<strong>Harvest advice:</strong><br>" +
-      "Harvest maize when it has reached appropriate maturity " +
-      "and moisture conditions. Proper drying and storage can help " +
-      "reduce post-harvest losses and protect grain quality.";
-
-  } else if (
-    question.includes("market") ||
-    question.includes("price") ||
-    question.includes("sell")
-  ) {
-
-    advice =
-      "<strong>Market advice:</strong><br>" +
-      "Before selling maize, compare available buyers and market " +
-      "prices where possible. Proper storage can give farmers more " +
-      "flexibility to avoid forced low-price sales.";
-
-  } else {
-
-    advice =
-      "<strong>Agri-Vincent AI:</strong><br>" +
-      "Your question has been received. This prototype demonstrates " +
-      "the planned farmer-support workflow. Future versions will " +
-      "use Mistral AI models, agricultural knowledge, weather data, " +
-      "market information, and MCP-connected tools to provide " +
-      "more personalized recommendations.";
-
-  }
-
-  response.style.display = "block";
-
-  response.innerHTML = advice;
-}
-
-</script>
-
-</body>
-</html>
+  yo: {
+    subtitle: "Oluranlọwọ Ogbin Agbado ti O Ṣe akiyesi Iyipada Oju-ọjọ",
+    title: "Beere nipa ogbin agbado",
+    description: "Beere nipa dida, ajile, kokoro, oju-ọjọ, ikore, ibi ipamọ tabi ọja agbado.",
+    placeholder: "Apẹẹrẹ: Nigbawo ni mo yẹ ki n lo ajile si agbado mi?",
+    button: "Gba Imọran",
+    fertilizer: "Ajile",
+    pest: "Kokoro",
+    weather: "Oju-ọjọ",
+    harvest: "Ikore",
+    market: "Ọja",
+    planting: "Dida",
+    climate: "Afẹfẹ",
+    status: "Eyi jẹ prototype. AI, oju-ọjọ, ọja ati MCP le ṣafikun ni awọn igbesẹ iwaju.",
+    footerTitle: "Agri-Vincent AI Prototype — Rwanda",
+    footerText: "A ṣe apẹrẹ rẹ lati ṣe atilẹyin fun awọn agbẹ agbado kekere.",
+    empty: "Jọwọ kọ ibeere nipa ogbin agbado.",
+    fertilizerAnswer: "<strong>🌾 Imọran ajile</strong><br>Lo ajile da lori ipele idagbasoke agbado, ipo ilẹ, akoko dida ati awọn iṣeduro agbegbe.",
+    pestAnswer: "<strong>🐛 Imọran kokoro ati arun</strong><br>Ṣayẹwo awọn ewe ati igi agbado nigbagbogbo. Mọ iṣoro naa ṣaaju lilo oogun.",
+    weatherAnswer: "<strong>🌦️ Imọran oju-ọjọ</strong><br>Tẹle ojo ati oju-ọjọ ṣaaju dida tabi lilo ajile.",
+    harvestAnswer: "<strong>🌽 Imọran ikore</strong><br>Kó agbado nigbati o ba ti dagba daradara. Gbigbe ati ibi ipamọ to dara dinku pipadanu.",
+    marketAnswer: "<strong>💰 Imọran
