@@ -1,6 +1,14 @@
 services:
   - type: web
-    name: agri-vincent-mcp
-    runtime: docker
-    plan: free
-    healthCheckPath: /mcp
+    name: agri-vincent-ai
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: MISTRAL_MODEL
+        value: mistral-small-latest

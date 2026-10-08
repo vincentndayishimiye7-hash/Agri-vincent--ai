@@ -1,183 +1,27 @@
-# Agri-Vincent AI 🌽🤖  
-  
-## AI-Powered Climate-Smart Maize Farming Assistant for Africa  
-  
-Agri-Vincent AI is an open-source prototype designed to support smallholder maize farmers with practical, localized, and climate-smart farming guidance.  
-  
-The project focuses on helping maize farmers make better decisions about planting, fertilizer use, pests and diseases, weather risks, harvesting, storage, and market planning.  
-  
-The initial target context is Nyagatare District, Rwanda, with potential to scale to other African farming communities.  
-  
----  
-  
-## 🌍 Problem Statement  
-  
-Smallholder maize farmers in Rwanda and across Africa face several challenges:  
-  
-- Limited access to quality agricultural inputs.  
-- Limited access to modern farming technologies.  
-- Limited access to reliable agricultural information.  
-- Unpredictable rainfall and drought risks.  
-- High production costs.  
-- Low or unstable maize yields.  
-- Limited mechanization for land preparation, weeding, and harvesting.  
-- Post-harvest losses caused by poor drying and storage.  
-- Limited access to reliable markets and market information.  
-- Pressure to sell maize immediately after harvest at low prices.  
-- Limited access to affordable agricultural financing.  
-- Difficulty accessing timely and understandable agricultural advice.  
-  
-These challenges can reduce farmer income, food security, and employment opportunities for young people and women.  
-  
----  
-  
-## 💡 Proposed Solution  
-  
-Agri-Vincent AI provides a digital decision-support assistant for maize farmers.  
-  
-The system is designed to provide practical guidance based on farmer information such as:  
-  
-- Location  
-- Crop stage  
-- Farm size  
-- Soil condition  
-- Weather risk  
-- Pest or disease symptoms  
-- Harvest and grain condition  
-- Market and selling needs  
-  
-The long-term goal is to combine AI, agricultural knowledge, weather information, and market information to provide more personalized recommendations.  
-  
----  
-  
-## 🎯 Target Users  
-  
-The primary users are:  
-  
-1. Smallholder maize farmers.  
-2. Youth involved in agriculture.  
-3. Women farmers and agricultural entrepreneurs.  
-4. Farmer cooperatives and farmer groups.  
-5. Agricultural extension workers.  
-6. Agricultural advisors.  
-7. Agribusinesses supporting maize farmers.  
-8. Development organizations working in agriculture.  
-  
----  
-  
-## 🌱 Key Features  
-  
-### 1. Fertilizer Advice  
-  
-Provides general guidance on:  
-  
-- Fertilizer timing  
-- Soil considerations  
-- Nutrient management  
-- Organic matter  
-- Avoiding fertilizer losses  
-- Following local recommendations  
-  
-### 2. Pests and Diseases  
-  
-Provides guidance on:  
-  
-- Field inspection  
-- Identifying symptoms  
-- Integrated pest management  
-- Field sanitation  
-- Safe pesticide use  
-- When to consult an agricultural professional  
-  
-### 3. Weather and Climate-Smart Farming  
-  
-Provides guidance related to:  
-  
-- Variable rainfall  
-- Drought risk  
-- Planting timing  
-- Soil moisture  
-- Water conservation  
-- Climate resilience  
-- Weather monitoring  
-  
-### 4. Harvest and Storage  
-  
-Provides guidance on:  
-  
-- Harvest timing  
-- Drying  
-- Grain quality  
-- Storage  
-- Pest protection  
-- Rodent protection  
-- Reducing post-harvest losses  
-  
-### 5. Market Planning  
-  
-Provides guidance on:  
-  
-- Finding buyers  
-- Comparing legitimate market channels  
-- Storage versus immediate selling  
-- Transport and transaction costs  
-- Record keeping  
-- Farmer aggregation  
-  
----  
-  
-## 🌍 Multilingual Support  
-  
-The frontend prototype is designed to support multiple languages:  
-  
-- Kinyarwanda  
-- English  
-- French  
-- Kiswahili  
-- Amharic  
-- Hausa  
-- Yoruba  
-- isiZulu  
-- Portuguese  
-- Spanish  
-- Arabic  
-- Chinese  
-  
-The goal is to make agricultural AI more accessible to farmers who may not be comfortable using English.  
-  
----  
-  
-# 🤖 Agentic AI Architecture  
-  
-Agri-Vincent AI is being developed toward an agentic architecture where AI can:  
-  
-1. Understand a farmer's question.  
-2. Identify the farming problem.  
-3. Collect relevant farm context.  
-4. Select the appropriate agricultural tool.  
-5. Use external data sources when available.  
-6. Generate practical recommendations.  
-7. Explain the recommendation to the farmer.  
-8. Ask for additional information when necessary.  
-9. Escalate uncertain or high-risk cases to a human agricultural professional.  
-  
-### Planned Workflow  
-  
-```text  
-Farmer  
-   ↓  
-Agri-Vincent AI Interface  
-   ↓  
-AI Decision Layer  
-   ↓  
-Context & Problem Identification  
-   ↓  
-MCP Tools / Agricultural Knowledge  
-   ↓  
-Weather / Market / Farm Data  
-   ↓  
-Recommendation  
-   ↓  
-Farmer  
-   ↓  
-Human Agricultural Expert when necessary  
+# Agri-Vincent AI
+
+A starter Flask web app for maize-farming questions in Rwanda, with Kinyarwanda, English, and French UI options.
+
+## Run locally
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# Linux/macOS: source .venv/bin/activate
+pip install -r requirements.txt
+python app.py
+```
+Open http://127.0.0.1:5000
+
+## Deploy to Render
+1. Push these files to the root of your GitHub repository.
+2. In Render, create a new Web Service and select this repository.
+3. Build command: `pip install -r requirements.txt`
+4. Start command: `gunicorn app:app`
+5. Add `MISTRAL_API_KEY` in Render's Environment settings. Create the key in your Mistral account; do not put the key in GitHub or in source code.
+6. Deploy, then open `/health` on the deployed URL; it should return JSON with status `ok`.
+
+## Important
+- The app uses Mistral API only if `MISTRAL_API_KEY` is configured.
+- Without a key, the web app still loads but shows setup guidance instead of a generated AI answer.
+- Weather and market-price integrations, MCP tools, farmer profiles, and reminders are not implemented in this starter.
+- Agricultural advice is informational; follow local extension guidance and product labels.
