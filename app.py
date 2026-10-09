@@ -1,139 +1,157 @@
-import os
-import requests
-from flask import Flask, request, render_template_string
-
-app = Flask(__name__)
-
-PAGE = r"""<!doctype html>
-<html lang="rw">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agri-Vincent AI</title>
-  <style>
-    :root { --green:#176b3a; --pale:#edf7ef; --ink:#17251b; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:Arial,sans-serif; background:#f5f8f5; color:var(--ink); }
-    header { background:var(--green); color:white; padding:24px 18px; text-align:center; }
-    header h1 { margin:0 0 8px; font-size:clamp(25px,5vw,38px); }
-    header p { margin:0; line-height:1.5; }
-    main { width:min(760px, calc(100% - 24px)); margin:22px auto; }
-    .card { background:white; border-radius:16px; padding:20px; box-shadow:0 4px 18px #122b1710; margin-bottom:16px; }
-    label { display:block; font-weight:bold; margin:12px 0 6px; }
-    select, textarea, input { width:100%; padding:12px; border:1px solid #cbd8ce; border-radius:9px; font:inherit; background:white; }
-    textarea { min-height:120px; resize:vertical; }
-    button { border:0; background:var(--green); color:white; padding:13px 18px; border-radius:9px; font-weight:bold; font-size:16px; cursor:pointer; margin-top:12px; }
-    button:hover { filter:brightness(.92); }
-    .answer { background:var(--pale); border-left:4px solid var(--green); padding:16px; border-radius:8px; white-space:pre-wrap; line-height:1.6; }
-    .muted { color:#526157; font-size:14px; line-height:1.5; }
-    footer { text-align:center; padding:18px; color:#526157; font-size:13px; }
-  </style>
-</head>
-<body>
-<header>
-  <h1>🌽 Agri-Vincent AI</h1>
-  <p>Umufasha w'abahinzi b'ibigori mu Rwanda</p>
-  <p>Inama ku gutera, ifumbire, indwara, ikirere, gusarura n'amasoko.</p>
-</header>
-<main>
-  <section class="card">
-    <h2>Baza ikibazo cy'ubuhinzi</h2>
-    <form method="post">
-      <label for="language">Ururimi</label>
-      <select id="language" name="language">
-        <option value="Kinyarwanda" {% if language == 'Kinyarwanda' %}selected{% endif %}>Ikinyarwanda</option>
-        <option value="English" {% if language == 'English' %}selected{% endif %}>English</option>
-        <option value="Français" {% if language == 'Français' %}selected{% endif %}>Français</option>
-      </select>
-      <label for="location">Aho uhinga (urugero: Katabagemu, Nyagatare)</label>
-      <input id="location" name="location" value="{{ location }}" placeholder="Aho uhinga">
-      <label for="question">Ikibazo cyawe</label>
-      <textarea id="question" name="question" required placeholder="Urugero: Ni ryari nakoresha ifumbire ku bigori?">{{ question }}</textarea>
-      <button type="submit">Shaka inama</button>
-    </form>
-  </section>
-  {% if answer %}
-  <section class="card">
-    <h2>Igisubizo cya Agri-Vincent AI</h2>
-    <div class="answer">{{ answer }}</div>
-  </section>
-  {% endif %}
-  <section class="card">
-    <h3>Uko ikora</h3>
-    <p class="muted">Iyo MISTRAL_API_KEY yashyizwe muri environment variables za Render, porogaramu ikoresha Mistral AI. Niba itarashyirwamo, itanga ubutumwa bw'ibanze bukubwira icyo wakora. Ntukoreshe inama rusange mu mwanya w'amabwiriza y'inzobere z'ubuhinzi ku bibazo bikomeye.</p>
-  </section>
-</main>
-<footer>Agri-Vincent AI · Climate-smart maize farming · Rwanda</footer>
-</body>
-</html>"""
 
 def fallback_answer(question, location, language):
+    q = question.lower()
+
     if language == "English":
-        return ("AI service is not configured yet. Add MISTRAL_API_KEY in Render Environment to enable AI answers. "
-                "For now, check local RAB/MINAGRI guidance and ask an agronomist before applying chemicals or changing fertilizer rates. "
-                f"Your question: {question}")
+        if any(w in q for w in ["fertilizer", "fertiliser", "urea", "dap"]):
+            advice = (
+                "Fertilizer: Apply planting fertilizer according to local "
+                "recommendations. Nitrogen top-dressing is commonly done during "
+                "early maize growth, often around 3–4 weeks after emergence, "
+                "but timing and rates depend on soil, variety and local guidance. "
+                "Do not guess application rates."
+            )
+        elif any(w in q for w in ["plant", "planting", "seed", "sow"]):
+            advice = (
+                "Planting: Use quality seed suited to your area. Plant when "
+                "soil moisture is adequate and rainfall is established. Follow "
+                "the recommended spacing for your variety and avoid waterlogged soil."
+            )
+        elif any(w in q for w in ["pest", "disease", "worm", "yellow", "spots"]):
+            advice = (
+                "Pests and diseases: Inspect leaves, stems and maize cobs. "
+                "Describe the symptoms or share a clear photo with an extension "
+                "officer for identification. Do not apply pesticides before "
+                "identifying the problem."
+            )
+        elif any(w in q for w in ["harvest", "storage", "dry", "mould", "mold"]):
+            advice = (
+                "Harvest and storage: Harvest mature maize and dry it properly "
+                "before storage. Keep grain in a clean, dry place and protect "
+                "it from moisture, insects and rodents."
+            )
+        elif any(w in q for w in ["market", "price", "sell", "buyer"]):
+            advice = (
+                "Markets: Compare offers from several buyers and account for "
+                "transport and storage costs. This prototype does not have live "
+                "market prices; verify current prices locally."
+            )
+        elif any(w in q for w in ["weather", "rain", "drought", "climate"]):
+            advice = (
+                "Weather: Check a reliable local forecast before planting or "
+                "fertilizing. Conserve soil moisture and avoid applying fertilizer "
+                "immediately before heavy rain."
+            )
+        else:
+            advice = (
+                "Please describe the maize crop stage and the main problem. "
+                "For location-specific advice, consult your local agricultural "
+                "extension officer. This free prototype does not provide live "
+                "weather or market data."
+            )
+
+        return f"Agri-Vincent AI — Maize advice\nLocation: {location or 'Not specified'}\n\n{advice}"
+
     if language == "Français":
-        return ("Le service IA n'est pas encore configuré. Ajoutez MISTRAL_API_KEY dans les variables d'environnement de Render. "
-                "En attendant, vérifiez les recommandations locales du RAB/MINAGRI et consultez un conseiller agricole avant d'utiliser des produits chimiques. "
-                f"Votre question : {question}")
-    return ("Serivisi ya AI iracyategurwa. Kugira ngo ubone ibisubizo bya AI, shyira MISTRAL_API_KEY muri Environment Variables za Render. "
-            "Hagati aho, banza ugishe inama umukozi w'ubuhinzi cyangwa amabwiriza yemewe ya RAB/MINAGRI, cyane cyane mbere yo gukoresha imiti cyangwa guhindura ingano y'ifumbire. "
-            f"\nAho uhinga: {location or 'Ntabwo wahagaragaje'}\nIkibazo cyawe: {question}")
+        if any(w in q for w in ["fertilis", "urée", "dap", "engrais"]):
+            advice = (
+                "Engrais : appliquez l'engrais de fond selon les recommandations "
+                "locales. L'apport d'azote se fait souvent au début de la croissance, "
+                "environ 3 à 4 semaines après la levée, mais le moment et la dose "
+                "dépendent du sol et des conseils locaux. Ne devinez pas les doses."
+            )
+        elif any(w in q for w in ["planter", "semis", "graine"]):
+            advice = (
+                "Semis : utilisez des semences de qualité adaptées à votre région. "
+                "Semez lorsque l'humidité du sol est suffisante et suivez l'espacement "
+                "recommandé pour la variété."
+            )
+        elif any(w in q for w in ["maladie", "ravageur", "chenille", "feuille"]):
+            advice = (
+                "Maladies et ravageurs : examinez les feuilles, les tiges et les épis. "
+                "Faites identifier le problème par un agent agricole avant d'utiliser "
+                "un pesticide."
+            )
+        elif any(w in q for w in ["récolte", "stockage", "sécher"]):
+            advice = (
+                "Récolte et stockage : récoltez à maturité, séchez correctement le maïs "
+                "et stockez-le dans un endroit propre et sec, à l'abri de l'humidité "
+                "et des ravageurs."
+            )
+        elif any(w in q for w in ["marché", "prix", "vendre", "acheteur"]):
+            advice = (
+                "Marché : comparez plusieurs offres et tenez compte du transport et "
+                "du stockage. Ce prototype ne fournit pas les prix en temps réel."
+            )
+        else:
+            advice = (
+                "Précisez le stade de la culture et le problème observé. Consultez "
+                "un conseiller agricole local pour des recommandations adaptées. "
+                "Ce prototype ne fournit pas de météo en temps réel."
+            )
 
-def ask_mistral(question, location, language):
-    api_key = os.getenv("MISTRAL_API_KEY")
-    if not api_key:
-        return None
-    prompt = (
-        "You are Agri-Vincent AI, an agricultural information assistant focused ONLY on maize farming "
-        "for smallholder farmers in Rwanda, especially Nyagatare District. "
-        "Answer in the user's selected language. Give practical, clear, cautious advice. "
-        "Do not invent current weather, market prices, or official recommendations. "
-        "Ask for missing details if needed. For pesticide or fertilizer dosage, advise following the product label "
-        "and local RAB/MINAGRI extension guidance; do not guess dangerous dosages. "
-        "Mention when advice should be confirmed with a qualified agricultural extension officer.\n"
-        f"Selected language: {language}\nFarmer location: {location or 'Not specified'}\nQuestion: {question}"
-    )
-    try:
-        response = requests.post(
-            "https://api.mistral.ai/v1/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            json={
-                "model": os.getenv("MISTRAL_MODEL", "mistral-small-latest"),
-                "messages": [
-                    {"role": "system", "content": "You are a careful, practical maize-farming assistant."},
-                    {"role": "user", "content": prompt}
-                ],
-                "temperature": 0.3,
-                "max_tokens": 700
-            },
-            timeout=35
+        return f"Agri-Vincent AI — Conseils sur le maïs\nLieu : {location or 'Non précisé'}\n\n{advice}"
+
+    if any(w in q for w in ["ifumbire", "urea", "dap", "ifumbire", "gufumbira"]):
+        advice = (
+            "IFUMBIRE KU BIGORI\n"
+            "• Ifumbire ishyirwa igihe cyo gutera igomba gukurikiza amabwiriza y'inzobere z'ubuhinzi.\n"
+            "• Ifumbire irimo azote, nka UREA, akenshi ikoreshwa mu ntangiriro yo gukura kw'ibigori, hafi ibyumweru 3–4 bimaze kumera. Igihe nyacyo n'ingano biterwa n'ubwoko bw'ibigori, ubutaka n'amabwiriza y'aho uhinga.\n"
+            "• Yishyire kure gato y'uruti kandi uyitwikire n'ubutaka; ntuyishyire ku mababi.\n"
+            "• Irinde kuyikoresha mbere y'imvura nyinshi. Ntugakeke ingano y'ifumbire; kurikiza amabwiriza ya RAB/MINAGRI."
         )
-        response.raise_for_status()
-        return response.json()["choices"][0]["message"]["content"].strip()
-    except Exception:
-        app.logger.exception("Mistral API request failed")
-        return None
+    elif any(w in q for w in ["tera", "gutera", "imbuto", "umurima", "intera"]):
+        advice = (
+            "GUTERA IBIGORI\n"
+            "• Koresha imbuto nziza zemewe kandi zibereye aho uhinga.\n"
+            "• Tera igihe ubutaka bufite ubuhehere buhagije kandi imvura yatangiye neza.\n"
+            "• Kurikiza intera yo gutera isabwa ku bwoko bw'imbuto ukoresha.\n"
+            "• Irinde gutera mu butaka bwuzuyemo amazi.\n"
+            "• Ku gihe nyacyo cyo gutera muri Katabagemu, banza urebe iteganyagihe n'inama z'abakozi b'ubuhinzi."
+        )
+    elif any(w in q for w in ["indwara", "udukoko", "inyo", "ibibabi", "by'umuhondo", "ibyago"]):
+        advice = (
+            "INDWARA N'UDUKOKO\n"
+            "• Genzura amababi, ibiti n'ibigori buri gihe.\n"
+            "• Reba ibimenyetso: amabara adasanzwe, imyobo, inyo cyangwa kubora.\n"
+            "• Gerageza gusobanura ibimenyetso neza cyangwa werekane ifoto umukozi w'ubuhinzi.\n"
+            "• Ntukoreshe umuti utaramenya ikibazo; kurikiza amabwiriza y'umuti n'inama z'inzobere."
+        )
+    elif any(w in q for w in ["isarura", "gusaru", "kubika", "kumisha", "ibigori byumye"]):
+        advice = (
+            "GUSARURA NO KUBIKA\n"
+            "• Sarura ibigori byeze neza.\n"
+            "• Banza wumishe ibigori bihagije mbere yo kubibika.\n"
+            "• Bika mu bubiko busukuye kandi bwumutse, wirinde amazi, udukoko n'imbeba.\n"
+            "• Genzura ibigori biri mu bubiko kenshi kugira ngo umenye ibimenyetso byo kubora."
+        )
+    elif any(w in q for w in ["isoko", "igiciro", "kugurisha", "umuguzi"]):
+        advice = (
+            "ISOKO RY'IBIGORI\n"
+            "• Baza abaguzi benshi ugereranye ibiciro.\n"
+            "• Bara amafaranga y'ubwikorezi, kubika no gutunganya umusaruro.\n"
+            "• Shaka abaguzi mbere y'isarura niba bishoboka.\n"
+            "• Iyi prototype nta biciro by'isoko byo muri iki gihe itanga; banza ubyemeze ku isoko ryo hafi."
+        )
+    elif any(w in q for w in ["imvura", "ikirere", "izuba", "amapfa", "amapfa"]):
+        advice = (
+            "IKIRERE N'UBUHINZI\n"
+            "• Kurikirana iteganyagihe ryizewe mbere yo gutera cyangwa gukoresha ifumbire.\n"
+            "• Bika ubuhehere mu butaka uko bishoboka kandi urinde ubutaka isuri.\n"
+            "• Irinde gushyira ifumbire mbere y'imvura nyinshi.\n"
+            "• Iyi prototype ntitanga iteganyagihe ry'ako kanya."
+        )
+    else:
+        advice = (
+            "Murakoze kubaza Agri-Vincent AI!\n"
+            "Mpa amakuru arambuye: ibigori bigeze mu kihe cyiciro cyo gukura, "
+            "kandi ikibazo nyamukuru ni ikihe?\n"
+            "Iyi ni prototype y'ubuntu itanga inama z'ibanze; nta makuru y'ikirere "
+            "cyangwa ibiciro by'amasoko yo muri iki gihe ifite. Ku bibazo bikomeye, "
+            "ganira n'umukozi w'ubuhinzi wa RAB/MINAGRI."
+        )
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    answer = ""
-    question = ""
-    location = ""
-    language = "Kinyarwanda"
-    if request.method == "POST":
-        question = request.form.get("question", "").strip()[:3000]
-        location = request.form.get("location", "").strip()[:200]
-        language = request.form.get("language", "Kinyarwanda")
-        if language not in ("Kinyarwanda", "English", "Français"):
-            language = "Kinyarwanda"
-        if question:
-            answer = ask_mistral(question, location, language) or fallback_answer(question, location, language)
-    return render_template_string(PAGE, answer=answer, question=question, location=location, language=language)
-
-@app.route("/health")
-def health():
-    return {"status": "ok", "app": "Agri-Vincent AI"}
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")))
+    return (
+        f"Agri-Vincent AI — Inama ku bigori\n"
+        f"Aho uhinga: {location or 'Ntabwo wahagaragaje'}\n\n{advice}"
+    )
