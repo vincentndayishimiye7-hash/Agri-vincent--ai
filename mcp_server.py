@@ -11,10 +11,17 @@ Prototype MCP implementation for:
 - market planning
 """
 
+import os
 from mcp.server.fastmcp import FastMCP
 
+mcp = FastMCP(
+    "Agri-Vincent AI",
+    host="0.0.0.0",
+    port=int(os.environ.get("PORT", "8000")),
+    stateless_http=True,
+    json_response=True,
+)
 
-mcp = FastMCP("Agri-Vincent AI")
 
 
 @mcp.tool()
@@ -211,9 +218,5 @@ professional remains responsible for the final farm decision.
 """
 
 if __name__ == "__main__":
-    mcp.run(
-        transport="streamable-http",
-        stateless_http=True,
-        json_response=True,
-    )
+    mcp.run(transport="streamable-http")
 
